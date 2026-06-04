@@ -1,11 +1,12 @@
 from aiogram import Router, F
-from aiogram.filters import Command
 from aiogram.types import Message
 
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.keyboards.product import add_to_cart_keyboard
+from bot.keyboards.product_view import (
+    product_view_keyboard
+)
 from models import Product
 from repositories.category import CategoryRepository
 from bot.keyboards.catalog import categories_keyboard
@@ -42,7 +43,9 @@ async def catalog_button(
     )
 
 
-@router.callback_query(lambda c: c.data.startswith("category:"))
+@router.callback_query(
+    lambda c: c.data.startswith("category:")
+)
 async def category_callback(
         callback: CallbackQuery,
         session: AsyncSession,
@@ -57,36 +60,159 @@ async def category_callback(
     )
 
     if not products:
-        await callback.message.answer(
-            "Товаров пока нет"
+        await callback.answer(
+            "Товаров нет"
         )
-        await callback.answer()
         return
 
-    for product in products:
-        text = (
-            f"{product.name}\n\n"
-            # f"{product.description}\n\n"
-            f"Цена: {product.price} ₽\n"
-            f"В наличии: {product.stock} шт."
+    product = products[0]
+
+    text = (
+        f"📦 {product.name}\n\n"
+        f"💰 Цена: {product.price} ₽\n"
+        f"📦 Остаток: {product.stock} шт."
+    )
+
+    if product.description:
+        text += (
+            f"\n\n"
+            f"{product.description}"
         )
-        if product.image_id:
-            await callback.message.answer_photo(
-                photo=product.image_id,
-                caption=text,
-                reply_markup=add_to_cart_keyboard(
-                    product.id
-                )
+
+    if product.image_id:
+        await callback.message.answer_photo(
+            photo=product.image_id,
+            caption=text,
+            reply_markup=product_view_keyboard(
+                category_id=category_id,
+                product_id=product.id,
+                index=0,
+                total=len(products),
             )
-        else:
-            await callback.message.answer(
-                text=text,
-                reply_markup=add_to_cart_keyboard(
-                    product.id
-                )
+        )
+    else:
+        await callback.message.answer(
+            text,
+            reply_markup=product_view_keyboard(
+                category_id=category_id,
+                product_id=product.id,
+                index=0,
+                total=len(products),
             )
+        )
+
     await callback.answer()
 
+async def show_product(
+        callback: CallbackQuery,
+        session: AsyncSession,
+        category_id: int,
+        index: int,
+):
+    products = await product_repository.get_by_category(
+        session=session,
+        category_id=category_id,
+    )
+
+    product = products[index]
+
+    text = (
+        f"📦 {product.name}\n\n"
+        f"💰 Цена: {product.price} ₽\n"
+        f"📦 Остаток: {product.stock} шт."
+    )
+
+    if product.description:
+        text += (
+            f"\n\n"
+            f"{product.description}"
+        )
+
+    if product.image_id:
+
+        await callback.message.delete()
+
+        await callback.message.answer_photo(
+            photo=product.image_id,
+            caption=text,
+            reply_markup=product_view_keyboard(
+                category_id=category_id,
+                product_id=product.id,
+                index=index,
+                total=len(products),
+            )
+        )
+
+    else:
+        await callback.message.edit_text(
+            text,
+            reply_markup=product_view_keyboard(
+                category_id=category_id,
+                product_id=product.id,
+                index=index,
+                total=len(products),
+            )
+        )
+
+@router.callback_query(
+    F.data.startswith("product_next:")
+)
+async def product_next(
+        callback: CallbackQuery,
+        session: AsyncSession,
+):
+    _, category_id, index = (
+        callback.data.split(":")
+    )
+
+    await show_product(
+        callback,
+        session,
+        int(category_id),
+        int(index) + 1,
+    )
+
+    await callback.answer()
+
+@router.callback_query(
+    F.data.startswith("product_prev:")
+)
+async def product_prev(
+        callback: CallbackQuery,
+        session: AsyncSession,
+):
+    _, category_id, index = (
+        callback.data.split(":")
+    )
+
+    await show_product(
+        callback,
+        session,
+        int(category_id),
+        int(index) - 1,
+    )
+
+    await callback.answer()
+
+@router.callback_query(
+    F.data == "catalog_back"
+)
+async def catalog_back(
+        callback: CallbackQuery,
+        session: AsyncSession,
+):
+    categories = await repository.get_all(
+        session=session
+    )
+
+    await callback.message.answer(
+        "🏋️ Категории товаров",
+        reply_markup=categories_keyboard(
+            categories
+        )
+    )
+
+    await callback.answer()
 
 @router.callback_query(lambda c: c.data.startswith("cart:"))
 async def add_to_cart(
