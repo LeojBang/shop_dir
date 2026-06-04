@@ -12,6 +12,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bot.utils.order_status import ORDER_STATUSES
 from bot.keyboards.admin_orders import order_status_keyboard
 from bot.filters.admin import AdminFilter
+from bot.keyboards.orders_list_keyboard import (
+    orders_list_keyboard
+)
+from bot.keyboards.order_detail_keyboard import (
+    order_detail_keyboard
+)
 
 router = Router()
 
@@ -259,41 +265,96 @@ async def orders_by_status(
         )
         return
 
-    for order in orders:
-        user = await session.get(
-            User,
-            order.user_id,
+    await callback.message.edit_text(
+        (
+            f"📦 Заказы: "
+            f"{ORDER_STATUSES.get(status)}"
+        ),
+        reply_markup=orders_list_keyboard(
+            orders
         )
-        text = (
-            f"📦 Заказ #{order.id}\n"
-            f"Статус: {ORDER_STATUSES.get(order.status)}\n"
-            f"Сумма: {order.total_price} ₽\n\n"
+    )
 
-            f"👤 {user.first_name}\n"
-            f"📱 {user.phone}\n"
-            f"📍 {user.address}\n\n"
+    await callback.answer()
 
-            f"Товары:\n"
+
+@router.callback_query(
+    F.data.startswith("show_order:")
+)
+async def show_order(
+        callback: CallbackQuery,
+        session: AsyncSession,
+):
+    order_id = int(
+        callback.data.split(":")[1]
+    )
+
+    order = await order_repository.get_order(
+        session=session,
+        order_id=order_id,
+    )
+
+    user = await session.get(
+        User,
+        order.user_id,
+    )
+
+    text = (
+        f"📦 Заказ #{order.id}\n\n"
+        f"Статус: "
+        f"{ORDER_STATUSES.get(order.status)}\n\n"
+        f"👤 {user.first_name}\n"
+        f"📱 {user.phone}\n"
+        f"📍 {user.address}\n\n"
+        f"💰 {order.total_price} ₽\n\n"
+        f"Товары:\n"
+    )
+
+    for item in order.items:
+        text += (
+            f"• {item.product.name} "
+            f"x {item.quantity}\n"
         )
-        if order.tracking_number:
-            text += (
-                f"📦 Трек: "
-                f"{order.tracking_number}\n\n"
-            )
 
-        for item in order.items:
-            text += (
-                f"• {item.product.name} "
-                f"x {item.quantity}\n"
-            )
-
-        await callback.message.answer(
-            text,
-            reply_markup=order_status_keyboard(
-                order.id,
-                order.status,
-            )
+    if order.tracking_number:
+        text += (
+            f"\n📦 Трек:\n"
+            f"{order.tracking_number}"
         )
+
+    await callback.message.edit_text(
+        text,
+        reply_markup=order_detail_keyboard(
+            order
+        )
+    )
+
+    await callback.answer()
+
+
+@router.callback_query(
+    F.data.startswith("back_to_status:")
+)
+async def back_to_status(
+        callback: CallbackQuery,
+        session: AsyncSession,
+):
+    status = callback.data.split(":")[1]
+
+    orders = await order_repository.get_orders_by_status(
+        session=session,
+        status=status,
+    )
+
+    await callback.message.edit_text(
+        (
+            f"📦 Заказы: "
+            f"{ORDER_STATUSES.get(status)}"
+        ),
+        reply_markup=orders_list_keyboard(
+            orders
+        )
+    )
 
     await callback.answer()
 

@@ -1,8 +1,8 @@
-from models import CartItem
 from models.order import Order
 from models.order_item import OrderItem
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
+
 
 class OrderRepository:
 
@@ -30,6 +30,9 @@ class OrderRepository:
                     f"Недостаточно товара {item.product.name}"
                 )
 
+            # уменьшаем остаток сразу
+            item.product.stock -= item.quantity
+
             order_item = OrderItem(
                 order_id=order.id,
                 product_id=item.product_id,
@@ -42,23 +45,6 @@ class OrderRepository:
         await session.commit()
 
         return order
-
-    async def get_item(
-            self,
-            session,
-            cart_item_id: int,
-    ):
-        result = await session.execute(
-            select(CartItem)
-            .options(
-                selectinload(CartItem.product)
-            )
-            .where(
-                CartItem.id == cart_item_id
-            )
-        )
-
-        return result.scalar_one_or_none()
 
     async def get_user_orders(
             self,

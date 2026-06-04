@@ -9,7 +9,7 @@ from aiogram.types import CallbackQuery, Message
 from aiogram import F
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.states.product import EditPriceState, EditStockState, EditNameState, EditDescriptionState, AddPhotoState
+from bot.states.product import EditPriceState, EditStockState, EditNameState, EditDescriptionState
 from repositories.category import CategoryRepository
 from repositories.product import ProductRepository
 
@@ -122,7 +122,7 @@ async def save_price(
 
     product_id = data["product_id"]
 
-    product = await product_repository.update_price(
+    product = await product_repository.update_fields(
         session=session,
         product_id=product_id,
         price=price,
@@ -198,7 +198,7 @@ async def save_stock(
 
     product_id = data["product_id"]
 
-    product = await product_repository.update_stock(
+    product = await product_repository.update_fields(
         session=session,
         product_id=product_id,
         stock=stock,
@@ -256,7 +256,7 @@ async def save_name(
 ):
     data = await state.get_data()
 
-    product = await product_repository.update_name(
+    product = await product_repository.update_fields(
         session=session,
         product_id=data["product_id"],
         name=message.text,
@@ -313,7 +313,7 @@ async def save_description(
 ):
     data = await state.get_data()
 
-    product = await product_repository.update_description(
+    product = await product_repository.update_fields(
         session=session,
         product_id=data["product_id"],
         description=message.text,
@@ -326,65 +326,65 @@ async def save_description(
     await state.clear()
 
 
-@router.callback_query(
-    F.data.startswith("photo:")
-)
-async def photo_edit(
-        callback: CallbackQuery,
-        state: FSMContext,
-):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+# @router.callback_query(
+#     F.data.startswith("photo:")
+# )
+# async def photo_edit(
+#         callback: CallbackQuery,
+#         state: FSMContext,
+# ):
+#     product_id = int(
+#         callback.data.split(":")[1]
+#     )
+#
+#     await state.update_data(
+#         product_id=product_id
+#     )
+#
+#     await state.set_state(
+#         AddPhotoState.waiting_photo
+#     )
+#
+#     await callback.message.answer(
+#         "Отправьте новое фото товара"
+#     )
+#
+#     await callback.answer()
 
-    await state.update_data(
-        product_id=product_id
-    )
 
-    await state.set_state(
-        AddPhotoState.waiting_photo
-    )
-
-    await callback.message.answer(
-        "Отправьте новое фото товара"
-    )
-
-    await callback.answer()
-
-
-@router.message(
-    AddPhotoState.waiting_photo,
-    F.photo
-)
-async def save_product_photo(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
-):
-    data = await state.get_data()
-
-    product_id = data["product_id"]
-
-    image_id = message.photo[-1].file_id
-
-    product = await product_repository.update_image(
-        session=session,
-        product_id=product_id,
-        image_id=image_id,
-    )
-
-    if not product:
-        await message.answer(
-            "Товар не найден"
-        )
-        await state.clear()
-        return
-
-    await message.answer(
-        f"✅ Фото сохранено для товара {product.name}"
-    )
-
-    await state.clear()
+# @router.message(
+#     AddPhotoState.waiting_photo,
+#     F.photo
+# )
+# async def save_product_photo(
+#         message: Message,
+#         state: FSMContext,
+#         session: AsyncSession,
+# ):
+#     data = await state.get_data()
+#
+#     product_id = data["product_id"]
+#
+#     image_id = message.photo[-1].file_id
+#
+#     product = await product_repository.update_fields(
+#         session=session,
+#         product_id=product_id,
+#         image_id=image_id,
+#     )
+#
+#     if not product:
+#         await message.answer(
+#             "Товар не найден"
+#         )
+#         await state.clear()
+#         return
+#
+#     await message.answer(
+#         f"✅ Фото сохранено для товара {product.name}"
+#     )
+#
+#     await state.clear()
 
 
 @router.callback_query(
@@ -433,7 +433,7 @@ async def save_category(
 
     product_id = data["product_id"]
 
-    product = await product_repository.update_category(
+    product = await product_repository.update_fields(
         session=session,
         product_id=product_id,
         category_id=category_id,

@@ -32,25 +32,6 @@ class ProductRepository:
 
         return result.scalar_one_or_none()
 
-    async def update_image(
-            self,
-            session,
-            product_id: int,
-            image_id: str,
-    ):
-        product = await self.get_by_id(
-            session=session,
-            product_id=product_id,
-        )
-
-        if not product:
-            return None
-
-        product.image_id = image_id
-
-        await session.commit()
-
-        return product
 
     async def get_all(
             self,
@@ -63,45 +44,6 @@ class ProductRepository:
 
         return result.scalars().all()
 
-    async def update_stock(
-            self,
-            session,
-            product_id: int,
-            stock: int,
-    ):
-        product = await self.get_by_id(
-            session=session,
-            product_id=product_id,
-        )
-
-        if not product:
-            return None
-
-        product.stock = stock
-
-        await session.commit()
-
-        return product
-
-    async def update_price(
-            self,
-            session,
-            product_id: int,
-            price,
-    ):
-        product = await self.get_by_id(
-            session=session,
-            product_id=product_id,
-        )
-
-        if not product:
-            return None
-
-        product.price = price
-
-        await session.commit()
-
-        return product
 
     async def create(
             self,
@@ -145,11 +87,11 @@ class ProductRepository:
 
         return True
 
-    async def update_name(
+    async def update_fields(
             self,
             session,
             product_id: int,
-            name: str,
+            **fields,
     ):
         product = await self.get_by_id(
             session=session,
@@ -159,47 +101,8 @@ class ProductRepository:
         if not product:
             return None
 
-        product.name = name
-
-        await session.commit()
-
-        return product
-
-    async def update_description(
-            self,
-            session,
-            product_id: int,
-            description: str,
-    ):
-        product = await self.get_by_id(
-            session=session,
-            product_id=product_id,
-        )
-
-        if not product:
-            return None
-
-        product.description = description
-
-        await session.commit()
-
-        return product
-
-    async def update_category(
-            self,
-            session,
-            product_id: int,
-            category_id: int,
-    ):
-        product = await self.get_by_id(
-            session=session,
-            product_id=product_id,
-        )
-
-        if not product:
-            return None
-
-        product.category_id = category_id
+        for key, value in fields.items():
+            setattr(product, key, value)
 
         await session.commit()
 

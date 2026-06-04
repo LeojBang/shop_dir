@@ -71,12 +71,12 @@ def edit_product_keyboard(
                     callback_data=f"stock:{product_id}",
                 )
             ],
-            [
-                InlineKeyboardButton(
-                    text="🖼 Фото",
-                    callback_data=f"photo:{product_id}",
-                )
-            ],
+            # [
+            #     InlineKeyboardButton(
+            #         text="🖼 Фото",
+            #         callback_data=f"photo:{product_id}",
+            #     )
+            # ],
             [
                 InlineKeyboardButton(
                     text="📂 Категория",

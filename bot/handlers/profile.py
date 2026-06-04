@@ -62,7 +62,7 @@ async def save_name(
         telegram_id=message.from_user.id,
     )
 
-    await user_repository.update_name(
+    await user_repository.update_fields(
         session=session,
         user_id=user.id,
         first_name=message.text,
@@ -104,7 +104,7 @@ async def save_phone(
         telegram_id=message.from_user.id,
     )
 
-    await user_repository.update_phone(
+    await user_repository.update_fields(
         session=session,
         user_id=user.id,
         phone=message.text,
@@ -146,7 +146,7 @@ async def save_address(
         telegram_id=message.from_user.id,
     )
 
-    await user_repository.update_address(
+    await user_repository.update_fields(
         session=session,
         user_id=user.id,
         address=message.text,

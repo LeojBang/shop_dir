@@ -141,23 +141,13 @@ async def product_view(
 
     await callback.message.delete()
 
-    if product.image_id:
-        await callback.message.answer_photo(
-            photo=product.image_id,
-            caption=text,
-            reply_markup=product_card_keyboard(
-                product.id,
-                product.category_id,
-            )
+    await callback.message.answer(
+        text,
+        reply_markup=product_card_keyboard(
+            product.id,
+            product.category_id,
         )
-    else:
-        await callback.message.answer(
-            text,
-            reply_markup=product_card_keyboard(
-                product.id,
-                product.category_id,
-            )
-        )
+    )
 
     await callback.answer()
 

@@ -2,8 +2,8 @@ from aiogram.fsm.state import State
 from aiogram.fsm.state import StatesGroup
 
 
-class AddPhotoState(StatesGroup):
-    waiting_photo = State()
+# class AddPhotoState(StatesGroup):
+#     waiting_photo = State()
 
 
 class EditStockState(StatesGroup):

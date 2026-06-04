@@ -37,54 +37,16 @@ class UserRepository:
 
         return user
 
-    async def update_name(
+    async def update_fields(
             self,
             session,
             user_id: int,
-            first_name: str,
+            **fields,
     ):
         await session.execute(
             update(User)
             .where(User.id == user_id)
-            .values(first_name=first_name)
-        )
-
-        await session.commit()
-
-        return await session.get(
-            User,
-            user_id,
-        )
-
-    async def update_phone(
-            self,
-            session,
-            user_id: int,
-            phone: str,
-    ):
-        await session.execute(
-            update(User)
-            .where(User.id == user_id)
-            .values(phone=phone)
-        )
-
-        await session.commit()
-
-        return await session.get(
-            User,
-            user_id,
-        )
-
-    async def update_address(
-            self,
-            session,
-            user_id: int,
-            address: str,
-    ):
-        await session.execute(
-            update(User)
-            .where(User.id == user_id)
-            .values(address=address)
+            .values(**fields)
         )
 
         await session.commit()

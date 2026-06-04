@@ -34,10 +34,6 @@ async def confirm_payment(
             show_alert=True,
         )
         return
-    for item in order.items:
-        item.product.stock -= item.quantity
-
-    await session.commit()
 
     await order_repository.update_status(
         session=session,
@@ -96,5 +92,8 @@ async def reject_payment(
         f"❌ Заказ №{order.id}\n"
         f"Оплата отклонена"
     )
+    for item in order.items:
+        item.product.stock += item.quantity
 
+    await session.commit()
     await callback.answer()
