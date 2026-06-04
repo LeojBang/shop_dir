@@ -160,3 +160,54 @@ def products_page_keyboard(
     return InlineKeyboardMarkup(
         inline_keyboard=buttons
     )
+
+def products_list_keyboard(
+        products,
+        page: int,
+):
+    buttons = []
+
+    for product in products:
+        buttons.append([
+            InlineKeyboardButton(
+                text=product.name,
+                callback_data=f"edit_product:{product.id}",
+            )
+        ])
+
+    pagination = []
+
+    if page > 0:
+        pagination.append(
+            InlineKeyboardButton(
+                text="⬅️",
+                callback_data=f"products_page:{page-1}",
+            )
+        )
+
+    pagination.append(
+        InlineKeyboardButton(
+            text=f"{page + 1}",
+            callback_data="ignore",
+        )
+    )
+
+    pagination.append(
+        InlineKeyboardButton(
+            text="➡️",
+            callback_data=f"products_page:{page+1}",
+        )
+    )
+
+    buttons.append(pagination)
+
+    buttons.append([
+        InlineKeyboardButton(
+            text="⬅️ Назад",
+            callback_data="admin_products",
+        )
+    ])
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=buttons
+    )
