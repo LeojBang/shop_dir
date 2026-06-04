@@ -19,10 +19,6 @@ from bot.handlers.admin.admin_common import (
     router as admin_common_router
 )
 
-
-
-
-
 from bot.handlers import orders
 
 
@@ -36,7 +32,6 @@ async def main():
     dp.include_router(orders.router)
     dp.include_router(profile_router)
     dp.include_router(support_router)
-
 
     dp.include_router(admin_menu_router)
     dp.include_router(admin_orders_router)
