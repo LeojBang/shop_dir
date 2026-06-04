@@ -16,7 +16,7 @@ class OrderRepository:
         order = Order(
             user_id=user_id,
             total_price=total_price,
-            status="new",
+            status="waiting_payment",
         )
 
         session.add(order)
@@ -38,8 +38,6 @@ class OrderRepository:
             )
 
             session.add(order_item)
-
-            item.product.stock -= item.quantity
 
         await session.commit()
 
@@ -100,7 +98,13 @@ class OrderRepository:
     ):
         result = await session.execute(
             select(Order)
-            .where(Order.status == "awaiting_payment")
+            .where(
+                Order.status.in_([
+                    "waiting_payment",
+                    "processing",
+                    "shipped",
+                ])
+            )
             .options(
                 selectinload(Order.items)
                 .selectinload(OrderItem.product)
@@ -118,6 +122,10 @@ class OrderRepository:
         result = await session.execute(
             select(Order)
             .where(Order.id == order_id)
+            .options(
+                selectinload(Order.items)
+                .selectinload(OrderItem.product)
+            )
         )
 
         return result.scalar_one_or_none()
@@ -132,6 +140,39 @@ class OrderRepository:
             update(Order)
             .where(Order.id == order_id)
             .values(status=status)
+        )
+
+        await session.commit()
+
+    async def get_orders_by_status(
+            self,
+            session,
+            status: str,
+    ):
+        result = await session.execute(
+            select(Order)
+            .where(Order.status == status)
+            .options(
+                selectinload(Order.items)
+                .selectinload(OrderItem.product)
+            )
+            .order_by(Order.created_at.desc())
+        )
+
+        return result.scalars().all()
+
+    async def update_tracking_number(
+            self,
+            session,
+            order_id: int,
+            tracking_number: str,
+    ):
+        await session.execute(
+            update(Order)
+            .where(Order.id == order_id)
+            .values(
+                tracking_number=tracking_number
+            )
         )
 
         await session.commit()

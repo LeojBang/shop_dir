@@ -66,7 +66,7 @@ async def category_callback(
     for product in products:
         text = (
             f"{product.name}\n\n"
-            f"{product.description}\n\n"
+            # f"{product.description}\n\n"
             f"Цена: {product.price} ₽\n"
             f"В наличии: {product.stock} шт."
         )

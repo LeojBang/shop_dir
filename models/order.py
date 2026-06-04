@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, Column
 from sqlalchemy import String
 
 from sqlalchemy.orm import Mapped, relationship
@@ -24,6 +24,10 @@ class Order(Base):
     )
 
     total_price: Mapped[float]
+    tracking_number = Column(
+        String,
+        nullable=True,
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,

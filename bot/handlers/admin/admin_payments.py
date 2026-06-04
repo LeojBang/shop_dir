@@ -9,6 +9,7 @@ router = Router()
 
 order_repository = OrderRepository()
 
+
 @router.callback_query(
     F.data.startswith("confirm_payment:")
 )
@@ -24,11 +25,24 @@ async def confirm_payment(
         session=session,
         order_id=order_id,
     )
+    if order.status not in (
+            "waiting_payment",
+            "payment_check",
+    ):
+        await callback.answer(
+            "Заказ уже обработан",
+            show_alert=True,
+        )
+        return
+    for item in order.items:
+        item.product.stock -= item.quantity
+
+    await session.commit()
 
     await order_repository.update_status(
         session=session,
         order_id=order_id,
-        status="paid",
+        status="processing",
     )
     user = await session.get(
         User,

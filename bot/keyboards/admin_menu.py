@@ -14,7 +14,7 @@ def admin_menu_keyboard():
             [
                 InlineKeyboardButton(
                     text="🧾 Заказы",
-                    callback_data="admin_orders",
+                    callback_data="admin_orders_menu",
                 )
             ],
             [

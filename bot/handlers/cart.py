@@ -203,6 +203,12 @@ async def paid_handler(
         session=session,
         order_id=order_id,
     )
+    if order.status != "waiting_payment":
+        await callback.answer(
+            "Заявка уже отправлена",
+            show_alert=True,
+        )
+        return
 
     admin_text = (
         f"💳 Заявка на подтверждение оплаты\n\n"
@@ -220,9 +226,19 @@ async def paid_handler(
             )
         )
 
-    await callback.answer(
-        "Заявка отправлена администратору"
+    await order_repository.update_status(
+        session=session,
+        order_id=order_id,
+        status="payment_check",
     )
+
+    await callback.message.edit_text(
+        "⏳ Заявка на проверку оплаты отправлена.\n\n"
+        "Пожалуйста, дождитесь подтверждения администратора.\n"
+        "После проверки вы получите уведомление."
+    )
+
+    await callback.answer()
 
 
 @router.callback_query(lambda c: c.data.startswith("plus:"))

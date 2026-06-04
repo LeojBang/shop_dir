@@ -18,7 +18,7 @@ class Product(Base):
         primary_key=True
     )
     name: Mapped[str]
-    description: Mapped[str]
+    description: Mapped[str | None] = mapped_column(nullable=True)
     price: Mapped[Decimal] = mapped_column(
         Numeric(10, 2)
     )

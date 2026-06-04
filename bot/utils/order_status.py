@@ -1,7 +1,10 @@
 ORDER_STATUSES = {
     "new": "🆕 Новый",
-    "awaiting_payment": "💳 Ожидает оплату",
-    "paid": "💰 Оплачен",
-    "completed": "✅ Выполнен",
-    "cancelled": "❌ Отменен",
+    "waiting_payment": "💳 Ожидает оплату",
+    "payment_check": "⏳ Проверка оплаты",
+    "paid": "✅ Оплачен",
+    "processing": "📦 В обработке",
+    "shipped": "🚚 Отправлен",
+    "completed": "✔️ Выполнен",
+    "cancelled": "❌ Отменён",
 }

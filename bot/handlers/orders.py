@@ -1,11 +1,12 @@
 from aiogram import Router, F
-from aiogram.filters import Command
 from aiogram.types import Message
+from datetime import timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from bot.utils.order_status import ORDER_STATUSES
 from repositories.order import OrderRepository
 from repositories.user import UserRepository
+
 router = Router()
 
 order_repository = OrderRepository()
@@ -44,12 +45,23 @@ async def my_orders(
     text = "📦 Ваши заказы\n\n"
 
     for order in orders:
+
+        date = (
+                order.created_at + timedelta(hours=3)
+        ).strftime("%d.%m.%Y %H:%M")
+
         text += (
             f"Заказ №{order.id}\n"
             f"Статус: {ORDER_STATUSES.get(order.status, order.status)}\n"
+            f"📅 {date}\n\n"
             f"Сумма: {order.total_price} ₽\n"
             f"Товары:\n"
         )
+        if order.tracking_number:
+            text += (
+                f"\n📦 Трек-номер:\n"
+                f"{order.tracking_number}\n"
+            )
 
         for item in order.items:
             text += (
