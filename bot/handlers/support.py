@@ -10,5 +10,6 @@ async def support(
 ):
     await message.answer(
         "Для связи с менеджером:\n"
-        "https://t.me/your_manager"
+        "https://t.me/@l_i_l_u_888\n"
+        "https://t.me/@Dgekson654"
     )

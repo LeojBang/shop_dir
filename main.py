@@ -1,7 +1,7 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
-
+from core.database_init import create_tables
 from bot import main_router
 from bot.middlewares.database import DatabaseMiddleware
 from core.config import settings
@@ -24,6 +24,8 @@ from bot.handlers import orders
 
 async def main():
     bot = Bot(token=settings.BOT_TOKEN)
+
+    await create_tables()
 
     dp = Dispatcher()
 

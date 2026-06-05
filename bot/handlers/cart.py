@@ -156,12 +156,13 @@ async def checkout_handler(
     await callback.message.answer(
         f"✅ Заказ №{order.id} создан\n\n"
         f"💰 К оплате: {total_price:.2f} ₽\n\n"
-        f"Переведите указанную сумму на номер:\n"
-        f"+7XXXXXXXXXX\n\n"
+        f"Переведите указанную сумму на номер карты:\n\n"
+        f"<b>💰 OZON BANK 💰</b>\n"
+        f"Ермилов Евгений\n"
+        f"<code>2204320905741320</code>\n\n"
         f"После оплаты нажмите кнопку ниже.",
-        reply_markup=payment_keyboard(
-            order.id
-        )
+        reply_markup=payment_keyboard(order.id),
+        parse_mode="HTML",
     )
 
     admin_text = (

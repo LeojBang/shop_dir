@@ -162,3 +162,14 @@ class OrderRepository:
         )
 
         await session.commit()
+
+    async def get_stats_orders(
+            self,
+            session,
+    ):
+        result = await session.execute(
+            select(Order)
+            .where(Order.status != "canceled")
+        )
+
+        return result.scalars().all()
