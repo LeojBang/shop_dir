@@ -1,8 +1,10 @@
+from decimal import Decimal
+
+from sqlalchemy import ForeignKey, Numeric
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from models.base import Base
 
-
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class OrderItem(Base):
     __tablename__ = "order_items"
@@ -19,7 +21,9 @@ class OrderItem(Base):
 
     quantity: Mapped[int]
 
-    price: Mapped[float]
+    price: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2)
+    )
 
     order = relationship(
         "Order",

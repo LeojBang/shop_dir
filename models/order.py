@@ -1,10 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from decimal import Decimal
 
-from sqlalchemy import DateTime, Column
-from sqlalchemy import String
-
-from sqlalchemy.orm import Mapped, relationship
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import DateTime, Numeric, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
 
@@ -23,15 +21,17 @@ class Order(Base):
         default="new",
     )
 
-    total_price: Mapped[float]
-    tracking_number = Column(
+    total_price: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2)
+    )
+
+    tracking_number: Mapped[str | None] = mapped_column(
         String,
         nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        default=datetime.utcnow
     )
 
     items = relationship(

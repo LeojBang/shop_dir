@@ -1,6 +1,7 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 from core.database_init import create_tables
 from bot import main_router
 from bot.middlewares.database import DatabaseMiddleware
@@ -27,10 +28,12 @@ async def main():
 
     await create_tables()
 
-    dp = Dispatcher()
+    storage = MemoryStorage()
+    dp = Dispatcher(storage=storage)
 
     dp.message.middleware(DatabaseMiddleware())
     dp.callback_query.middleware(DatabaseMiddleware())
+
     dp.include_router(orders.router)
     dp.include_router(profile_router)
     dp.include_router(support_router)
@@ -44,6 +47,7 @@ async def main():
     dp.include_router(admin_payments_router)
 
     dp.include_router(main_router)
+
     await dp.start_polling(bot)
 
 

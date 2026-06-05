@@ -32,7 +32,6 @@ class ProductRepository:
 
         return result.scalar_one_or_none()
 
-
     async def get_all(
             self,
             session,
@@ -43,7 +42,6 @@ class ProductRepository:
         )
 
         return result.scalars().all()
-
 
     async def create(
             self,
@@ -107,21 +105,6 @@ class ProductRepository:
         await session.commit()
 
         return product
-
-    async def search_by_name(
-            self,
-            session,
-            name: str,
-    ):
-        result = await session.execute(
-            select(Product).where(
-                func.lower(Product.name).contains(
-                    name.lower()
-                )
-            )
-        )
-
-        return list(result.scalars().all())
 
     async def get_page(
             self,

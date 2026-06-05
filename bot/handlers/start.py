@@ -2,14 +2,11 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from bot.keyboards.main_menu import (
-    main_menu_keyboard
-)
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.keyboards.main_menu import main_menu_keyboard
 from services.user import UserService
-from config import ADMIN_IDS
+from core.config import settings
 
 router = Router()
 
@@ -27,7 +24,7 @@ async def start_handler(
         username=message.from_user.username,
     )
 
-    is_admin = message.from_user.id in ADMIN_IDS
+    is_admin = message.from_user.id in settings.ADMIN_IDS
 
     await message.answer(
         "🧬 Добро пожаловать!\n\n"
@@ -44,7 +41,5 @@ async def start_handler(
         "✔️ Поддержка клиентов\n\n"
         "Выберите интересующие товары в каталоге и оформите заказ прямо в Telegram.\n\n"
         "💪 Спасибо за доверие!",
-        reply_markup=main_menu_keyboard(
-            is_admin=is_admin
-        ),
+        reply_markup=main_menu_keyboard(is_admin=is_admin),
     )

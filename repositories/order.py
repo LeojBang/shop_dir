@@ -1,7 +1,11 @@
-from models.order import Order
-from models.order_item import OrderItem
+from decimal import Decimal
+
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
+
+from models.order import Order
+from models.order_item import OrderItem
+from models.product import Product
 
 
 class OrderRepository:
@@ -11,7 +15,7 @@ class OrderRepository:
             session,
             user_id: int,
             items,
-            total_price: float,
+            total_price: Decimal,
     ):
         order = Order(
             user_id=user_id,
@@ -20,30 +24,33 @@ class OrderRepository:
         )
 
         session.add(order)
-
         await session.flush()
 
         for item in items:
+            result = await session.execute(
+                select(Product)
+                .where(Product.id == item.product_id)
+                .with_for_update()
+            )
+            product = result.scalar_one()
 
-            if item.product.stock < item.quantity:
+            if product.stock < item.quantity:
                 raise ValueError(
-                    f"Недостаточно товара {item.product.name}"
+                    f"Недостаточно товара: {product.name}. "
+                    f"Доступно: {product.stock} шт."
                 )
 
-            # уменьшаем остаток сразу
-            item.product.stock -= item.quantity
+            product.stock -= item.quantity
 
             order_item = OrderItem(
                 order_id=order.id,
                 product_id=item.product_id,
                 quantity=item.quantity,
-                price=item.product.price,
+                price=product.price,
             )
-
             session.add(order_item)
 
         await session.commit()
-
         return order
 
     async def get_user_orders(
@@ -60,7 +67,6 @@ class OrderRepository:
             )
             .order_by(Order.created_at.desc())
         )
-
         return result.scalars().all()
 
     async def get_all_orders(
@@ -75,7 +81,6 @@ class OrderRepository:
             )
             .order_by(Order.created_at.desc())
         )
-
         return result.scalars().all()
 
     async def get_new_orders(
@@ -97,7 +102,6 @@ class OrderRepository:
             )
             .order_by(Order.created_at.desc())
         )
-
         return result.scalars().all()
 
     async def get_order(
@@ -113,7 +117,6 @@ class OrderRepository:
                 .selectinload(OrderItem.product)
             )
         )
-
         return result.scalar_one_or_none()
 
     async def update_status(
@@ -127,7 +130,6 @@ class OrderRepository:
             .where(Order.id == order_id)
             .values(status=status)
         )
-
         await session.commit()
 
     async def get_orders_by_status(
@@ -144,7 +146,6 @@ class OrderRepository:
             )
             .order_by(Order.created_at.desc())
         )
-
         return result.scalars().all()
 
     async def update_tracking_number(
@@ -156,11 +157,8 @@ class OrderRepository:
         await session.execute(
             update(Order)
             .where(Order.id == order_id)
-            .values(
-                tracking_number=tracking_number
-            )
+            .values(tracking_number=tracking_number)
         )
-
         await session.commit()
 
     async def get_stats_orders(
@@ -171,5 +169,4 @@ class OrderRepository:
             select(Order)
             .where(Order.status != "canceled")
         )
-
         return result.scalars().all()

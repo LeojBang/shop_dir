@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.admin_payment import payment_confirm_keyboard
 from bot.keyboards.payment import payment_keyboard
-from config import ADMIN_IDS
+from core.config import settings  # Было: from config import ADMIN_IDS
 from bot.keyboards.cart import cart_keyboard, checkout_keyboard
 from repositories.cart import CartRepository
 from repositories.user import UserRepository
@@ -43,9 +43,7 @@ async def cart_button(
     )
 
     if not user:
-        await message.answer(
-            "Пользователь не найден"
-        )
+        await message.answer("Пользователь не найден")
         return
 
     items = await cart_repository.get_user_cart(
@@ -54,9 +52,7 @@ async def cart_button(
     )
 
     if not items:
-        await message.answer(
-            "Корзина пуста 🛒"
-        )
+        await message.answer("Корзина пуста 🛒")
         return
 
     total = sum(
@@ -71,9 +67,7 @@ async def cart_button(
                 f"Количество: {item.quantity}\n"
                 f"Цена: {item.product.price} ₽"
             ),
-            reply_markup=cart_keyboard(
-                item.id
-            )
+            reply_markup=cart_keyboard(item.id)
         )
 
     await message.answer(
@@ -91,6 +85,7 @@ async def checkout_handler(
         session=session,
         telegram_id=callback.from_user.id,
     )
+
     if not user.first_name:
         await callback.answer(
             "Заполните имя в профиле",
@@ -124,6 +119,7 @@ async def checkout_handler(
         )
         return
 
+    # Предварительная проверка остатков (до блокировки в БД)
     for item in items:
         if item.product.stock < item.quantity:
             await callback.answer(
@@ -141,25 +137,36 @@ async def checkout_handler(
         for item in items
     )
 
-    order = await order_repository.create_order(
-        session=session,
-        user_id=user.id,
-        items=items,
-        total_price=total_price,
-    )
+    # Было: ValueError из create_order нигде не перехватывался — бот падал
+    # Стало: перехватываем и показываем пользователю понятное сообщение
+    try:
+        order = await order_repository.create_order(
+            session=session,
+            user_id=user.id,
+            items=items,
+            total_price=total_price,
+        )
+    except ValueError as e:
+        await callback.answer(
+            str(e),
+            show_alert=True,
+        )
+        return
 
     await cart_repository.clear_cart(
         session=session,
         user_id=user.id,
     )
 
+    # Было: реквизиты захардкожены прямо в коде
+    # Стало: читаем из конфига (который берёт из .env)
     await callback.message.answer(
         f"✅ Заказ №{order.id} создан\n\n"
         f"💰 К оплате: {total_price:.2f} ₽\n\n"
         f"Переведите указанную сумму на номер карты:\n\n"
-        f"<b>💰 OZON BANK 💰</b>\n"
-        f"Ермилов Евгений\n"
-        f"<code>2204320905741320</code>\n\n"
+        f"<b>💰 {settings.PAYMENT_BANK_NAME} 💰</b>\n"
+        f"{settings.PAYMENT_RECIPIENT}\n"
+        f"<code>{settings.PAYMENT_CARD_NUMBER}</code>\n\n"
         f"После оплаты нажмите кнопку ниже.",
         reply_markup=payment_keyboard(order.id),
         parse_mode="HTML",
@@ -180,7 +187,7 @@ async def checkout_handler(
             f"x {item.quantity}\n"
         )
 
-    for admin_id in ADMIN_IDS:
+    for admin_id in settings.ADMIN_IDS:
         await callback.bot.send_message(
             chat_id=admin_id,
             text=admin_text,
@@ -196,14 +203,13 @@ async def paid_handler(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    order_id = int(
-        callback.data.split(":")[1]
-    )
+    order_id = int(callback.data.split(":")[1])
 
     order = await order_repository.get_order(
         session=session,
         order_id=order_id,
     )
+
     if order.status != "waiting_payment":
         await callback.answer(
             "Заявка уже отправлена",
@@ -218,13 +224,11 @@ async def paid_handler(
         f"Пользователь сообщил, что оплатил заказ."
     )
 
-    for admin_id in ADMIN_IDS:
+    for admin_id in settings.ADMIN_IDS:
         await callback.bot.send_message(
             chat_id=admin_id,
             text=admin_text,
-            reply_markup=payment_confirm_keyboard(
-                order.id
-            )
+            reply_markup=payment_confirm_keyboard(order.id)
         )
 
     await order_repository.update_status(
@@ -247,9 +251,7 @@ async def plus_handler(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    cart_item_id = int(
-        callback.data.split(":")[1]
-    )
+    cart_item_id = int(callback.data.split(":")[1])
 
     item = await cart_repository.get_item(
         session=session,
@@ -293,9 +295,7 @@ async def minus_handler(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    cart_item_id = int(
-        callback.data.split(":")[1]
-    )
+    cart_item_id = int(callback.data.split(":")[1])
 
     await cart_repository.decrease_quantity(
         session=session,
@@ -323,9 +323,7 @@ async def delete_handler(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    cart_item_id = int(
-        callback.data.split(":")[1]
-    )
+    cart_item_id = int(callback.data.split(":")[1])
 
     await cart_repository.remove_item(
         session=session,
@@ -334,6 +332,4 @@ async def delete_handler(
 
     await callback.message.delete()
 
-    await callback.answer(
-        "Товар удалён"
-    )
+    await callback.answer("Товар удалён")

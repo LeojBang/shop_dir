@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
-from sqlalchemy import BigInteger, Column, String, Text
+from sqlalchemy import BigInteger
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from models.base import Base
@@ -18,9 +19,19 @@ class User(Base):
         unique=True,
         index=True,
     )
-    first_name = Column(String, nullable=True)
-    phone = Column(String, nullable=True)
-    address = Column(Text, nullable=True)
+
+    first_name: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+    )
+    phone: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+    )
+    address: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
     username: Mapped[str | None]
 
     created_at: Mapped[datetime] = mapped_column(

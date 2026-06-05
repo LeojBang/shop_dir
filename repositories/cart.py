@@ -1,18 +1,9 @@
-from sqlalchemy import delete
-from models.cart_item import CartItem
-
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import selectinload
 
+from models.cart_item import CartItem
 
-async def get_cart_item(session, item_id: int):
-    result = await session.execute(
-        select(CartItem)
-        .options(selectinload(CartItem.product))
-        .where(CartItem.id == item_id)
-    )
 
-    return result.scalar_one_or_none()
 
 
 class CartRepository:
@@ -29,7 +20,6 @@ class CartRepository:
         )
 
         result = await session.execute(stmt)
-
         cart_item = result.scalar_one_or_none()
 
         if cart_item:
@@ -40,7 +30,6 @@ class CartRepository:
                 product_id=product_id,
                 quantity=1,
             )
-
             session.add(cart_item)
 
         await session.commit()
@@ -50,14 +39,10 @@ class CartRepository:
             session,
             cart_item_id: int,
     ):
-        item = await session.get(
-            CartItem,
-            cart_item_id,
-        )
+        item = await session.get(CartItem, cart_item_id)
 
         if item:
             item.quantity += 1
-
             await session.commit()
 
     async def decrease_quantity(
@@ -65,10 +50,7 @@ class CartRepository:
             session,
             cart_item_id: int,
     ):
-        item = await session.get(
-            CartItem,
-            cart_item_id,
-        )
+        item = await session.get(CartItem, cart_item_id)
 
         if not item:
             return
@@ -85,10 +67,7 @@ class CartRepository:
             session,
             cart_item_id: int,
     ):
-        item = await session.get(
-            CartItem,
-            cart_item_id,
-        )
+        item = await session.get(CartItem, cart_item_id)
 
         if item:
             await session.delete(item)
@@ -101,14 +80,9 @@ class CartRepository:
     ):
         result = await session.execute(
             select(CartItem)
-            .options(
-                selectinload(CartItem.product)
-            )
-            .where(
-                CartItem.user_id == user_id
-            )
+            .options(selectinload(CartItem.product))
+            .where(CartItem.user_id == user_id)
         )
-
         return list(result.scalars().all())
 
     async def clear_cart(
@@ -121,7 +95,6 @@ class CartRepository:
                 CartItem.user_id == user_id
             )
         )
-
         await session.commit()
 
     async def get_item(
@@ -131,12 +104,7 @@ class CartRepository:
     ):
         result = await session.execute(
             select(CartItem)
-            .options(
-                selectinload(CartItem.product)
-            )
-            .where(
-                CartItem.id == cart_item_id
-            )
+            .options(selectinload(CartItem.product))
+            .where(CartItem.id == cart_item_id)
         )
-
         return result.scalar_one_or_none()

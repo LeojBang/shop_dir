@@ -5,6 +5,7 @@ from aiogram import F
 
 from bot.keyboards.admin_orders_filter import orders_filter_keyboard
 from bot.keyboards.admin_orders_menu import admin_orders_menu_keyboard
+from bot.keyboards.cancel_tracking import cancel_tracking_keyboard
 from bot.states.order import TrackingState
 from models import User
 from repositories.order import OrderRepository
@@ -23,6 +24,19 @@ router = Router()
 
 order_repository = OrderRepository()
 router.message.filter(AdminFilter())
+
+
+@router.callback_query(
+    TrackingState.waiting_tracking_number,
+    ~F.data.in_(["cancel_tracking"])
+)
+async def block_callbacks(
+        callback: CallbackQuery,
+):
+    await callback.answer(
+        "Сначала введите трек-номер или нажмите Отмена",
+        show_alert=True,
+    )
 
 
 @router.callback_query(
@@ -422,7 +436,24 @@ async def tracking_number_start(
     )
 
     await callback.message.answer(
-        "Введите трек-номер:"
+        "Введите трек-номер:",
+        reply_markup=cancel_tracking_keyboard()
+    )
+
+    await callback.answer()
+
+
+@router.callback_query(
+    F.data == "cancel_tracking"
+)
+async def cancel_tracking(
+        callback: CallbackQuery,
+        state: FSMContext,
+):
+    await state.clear()
+
+    await callback.message.edit_text(
+        "❌ Ввод трек-номера отменён"
     )
 
     await callback.answer()
