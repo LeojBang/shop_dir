@@ -1,14 +1,14 @@
 from core.database import engine
 from models.base import Base
 
-# импортируем модели
-from models.user import User
-from models.product import Product
-from models.order import Order
-from models.order_item import OrderItem
-from models.cart_item import CartItem
-from models.category import Category
-from models.payment_settings import PaymentSettings
+# Импорты нужны для Alembic и create_tables — не удалять
+from models.user import User  # noqa: F401
+from models.product import Product  # noqa: F401
+from models.order import Order  # noqa: F401
+from models.order_item import OrderItem  # noqa: F401
+from models.cart_item import CartItem  # noqa: F401
+from models.category import Category  # noqa: F401
+from models.payment_settings import PaymentSettings  # noqa: F401
 
 
 async def create_tables():

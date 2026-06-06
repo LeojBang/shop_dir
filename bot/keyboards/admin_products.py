@@ -22,20 +22,19 @@ def admin_products_keyboard():
                     text="⬅️ Назад",
                     callback_data="admin_back",
                 )
-            ]
+            ],
         ]
     )
 
 
 def product_manage_keyboard(
-        product_id: int,
+    product_id: int,
 ):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="✏️ Редактировать",
-                    callback_data=f"edit_product:{product_id}"
+                    text="✏️ Редактировать", callback_data=f"edit_product:{product_id}"
                 )
             ]
         ]
@@ -43,7 +42,7 @@ def product_manage_keyboard(
 
 
 def edit_product_keyboard(
-        product_id: int,
+    product_id: int,
 ):
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -94,13 +93,13 @@ def edit_product_keyboard(
                     text="⬅️ К товарам",
                     callback_data="admin_products",
                 )
-            ]
+            ],
         ]
     )
 
 
 def confirm_delete_keyboard(
-        product_id: int,
+    product_id: int,
 ):
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -115,12 +114,13 @@ def confirm_delete_keyboard(
                     text="❌ Нет",
                     callback_data=f"edit_product:{product_id}",
                 )
-            ]
+            ],
         ]
     )
 
+
 def products_page_keyboard(
-        page: int,
+    page: int,
 ):
     buttons = []
 
@@ -150,30 +150,33 @@ def products_page_keyboard(
 
     buttons.append(row)
 
-    buttons.append([
-        InlineKeyboardButton(
-            text="⬅️ Назад",
-            callback_data="admin_products",
-        )
-    ])
-
-    return InlineKeyboardMarkup(
-        inline_keyboard=buttons
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                text="⬅️ Назад",
+                callback_data="admin_products",
+            )
+        ]
     )
 
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
 def products_list_keyboard(
-        products,
-        page: int,
+    products,
+    page: int,
 ):
     buttons = []
 
     for product in products:
-        buttons.append([
-            InlineKeyboardButton(
-                text=product.name,
-                callback_data=f"edit_product:{product.id}",
-            )
-        ])
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text=product.name,
+                    callback_data=f"edit_product:{product.id}",
+                )
+            ]
+        )
 
     pagination = []
 
@@ -201,13 +204,13 @@ def products_list_keyboard(
 
     buttons.append(pagination)
 
-    buttons.append([
-        InlineKeyboardButton(
-            text="⬅️ Назад",
-            callback_data="admin_products",
-        )
-    ])
-
-    return InlineKeyboardMarkup(
-        inline_keyboard=buttons
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                text="⬅️ Назад",
+                callback_data="admin_products",
+            )
+        ]
     )
+
+    return InlineKeyboardMarkup(inline_keyboard=buttons)

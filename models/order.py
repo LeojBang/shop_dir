@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import DateTime, Numeric, String
+from sqlalchemy import Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
@@ -10,9 +10,7 @@ from models.base import Base
 class Order(Base):
     __tablename__ = "orders"
 
-    id: Mapped[int] = mapped_column(
-        primary_key=True
-    )
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int]
 
@@ -21,18 +19,14 @@ class Order(Base):
         default="new",
     )
 
-    total_price: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2)
-    )
+    total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
 
     tracking_number: Mapped[str | None] = mapped_column(
         String,
         nullable=True,
     )
 
-    created_at: Mapped[datetime] = mapped_column(
-        default=datetime.utcnow
-    )
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
     items = relationship(
         "OrderItem",

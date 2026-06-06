@@ -2,7 +2,6 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.user import UserService
-from conftest import make_user
 
 service = UserService()
 

@@ -68,7 +68,9 @@ async def test_get_by_id_not_found(session: AsyncSession):
 async def test_update_fields(session: AsyncSession):
     """Обновление полей товара сохраняется."""
     category = await make_category(session)
-    product = await make_product(session, category_id=category.id, price=Decimal("1000.00"))
+    product = await make_product(
+        session, category_id=category.id, price=Decimal("1000.00")
+    )
 
     updated = await repo.update_fields(
         session=session,

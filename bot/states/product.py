@@ -25,10 +25,10 @@ class AddProductState(StatesGroup):
 class EditProductCategory(StatesGroup):
     change_category = State()
 
+
 class EditNameState(StatesGroup):
     waiting_name = State()
 
 
 class EditDescriptionState(StatesGroup):
     waiting_description = State()
-

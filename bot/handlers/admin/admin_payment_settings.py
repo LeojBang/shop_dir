@@ -2,7 +2,12 @@ import re
 
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    CallbackQuery,
+    Message,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.filters.admin import AdminFilter
@@ -23,9 +28,22 @@ CARD_REGEX = re.compile(r"^\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4}$")
 def payment_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🏦 Изменить банк", callback_data="edit_payment_bank")],
-            [InlineKeyboardButton(text="👤 Изменить получателя", callback_data="edit_payment_recipient")],
-            [InlineKeyboardButton(text="💳 Изменить номер карты", callback_data="edit_payment_card")],
+            [
+                InlineKeyboardButton(
+                    text="🏦 Изменить банк", callback_data="edit_payment_bank"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="👤 Изменить получателя",
+                    callback_data="edit_payment_recipient",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="💳 Изменить номер карты", callback_data="edit_payment_card"
+                )
+            ],
             [InlineKeyboardButton(text="◀️ Назад", callback_data="admin_back")],
         ]
     )
@@ -33,8 +51,8 @@ def payment_keyboard():
 
 @router.callback_query(F.data == "admin_payment_settings")
 async def payment_settings_menu(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     record = await payment_repo.get_or_default(session)
 
@@ -51,6 +69,7 @@ async def payment_settings_menu(
 
 
 # ── Изменить банк ────────────────────────────────────────────────────────────
+
 
 @router.callback_query(F.data == "edit_payment_bank")
 async def edit_bank(callback: CallbackQuery, state: FSMContext):
@@ -74,6 +93,7 @@ async def save_bank(message: Message, state: FSMContext, session: AsyncSession):
 
 # ── Изменить получателя ──────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data == "edit_payment_recipient")
 async def edit_recipient(callback: CallbackQuery, state: FSMContext):
     await state.set_state(EditPaymentState.waiting_recipient)
@@ -96,13 +116,13 @@ async def save_recipient(message: Message, state: FSMContext, session: AsyncSess
 
 # ── Изменить номер карты ─────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data == "edit_payment_card")
 async def edit_card(callback: CallbackQuery, state: FSMContext):
     await state.set_state(EditPaymentState.waiting_card)
     await callback.message.answer(
-        "💳 Введите номер карты (16 цифр):\n\n"
-        "Пример: 2204320905741320",
-        reply_markup = cancel_keyboard()
+        "💳 Введите номер карты (16 цифр):\n\n" "Пример: 2204320905741320",
+        reply_markup=cancel_keyboard(),
     )
     await callback.answer()
 

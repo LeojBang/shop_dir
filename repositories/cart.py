@@ -4,15 +4,13 @@ from sqlalchemy.orm import selectinload
 from models.cart_item import CartItem
 
 
-
-
 class CartRepository:
 
     async def add_product(
-            self,
-            session,
-            user_id: int,
-            product_id: int,
+        self,
+        session,
+        user_id: int,
+        product_id: int,
     ):
         stmt = select(CartItem).where(
             CartItem.user_id == user_id,
@@ -35,9 +33,9 @@ class CartRepository:
         await session.commit()
 
     async def increase_quantity(
-            self,
-            session,
-            cart_item_id: int,
+        self,
+        session,
+        cart_item_id: int,
     ):
         item = await session.get(CartItem, cart_item_id)
 
@@ -46,9 +44,9 @@ class CartRepository:
             await session.commit()
 
     async def decrease_quantity(
-            self,
-            session,
-            cart_item_id: int,
+        self,
+        session,
+        cart_item_id: int,
     ):
         item = await session.get(CartItem, cart_item_id)
 
@@ -63,9 +61,9 @@ class CartRepository:
             await session.commit()
 
     async def remove_item(
-            self,
-            session,
-            cart_item_id: int,
+        self,
+        session,
+        cart_item_id: int,
     ):
         item = await session.get(CartItem, cart_item_id)
 
@@ -74,9 +72,9 @@ class CartRepository:
             await session.commit()
 
     async def get_user_cart(
-            self,
-            session,
-            user_id: int,
+        self,
+        session,
+        user_id: int,
     ):
         result = await session.execute(
             select(CartItem)
@@ -86,21 +84,17 @@ class CartRepository:
         return list(result.scalars().all())
 
     async def clear_cart(
-            self,
-            session,
-            user_id: int,
+        self,
+        session,
+        user_id: int,
     ):
-        await session.execute(
-            delete(CartItem).where(
-                CartItem.user_id == user_id
-            )
-        )
+        await session.execute(delete(CartItem).where(CartItem.user_id == user_id))
         await session.commit()
 
     async def get_item(
-            self,
-            session,
-            cart_item_id: int,
+        self,
+        session,
+        cart_item_id: int,
     ):
         result = await session.execute(
             select(CartItem)

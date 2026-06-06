@@ -9,12 +9,10 @@ router = Router()
 order_repository = OrderRepository()
 
 
-@router.callback_query(
-    F.data == "admin_stats"
-)
+@router.callback_query(F.data == "admin_stats")
 async def admin_stats(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
 
     all_orders = await order_repository.get_all_orders(session=session)
@@ -32,4 +30,3 @@ async def admin_stats(
     )
 
     await callback.answer()
-

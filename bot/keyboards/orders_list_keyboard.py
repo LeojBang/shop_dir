@@ -5,7 +5,7 @@ from aiogram.types import (
 
 
 def orders_list_keyboard(
-        orders,
+    orders,
 ):
     keyboard = []
 
@@ -13,12 +13,8 @@ def orders_list_keyboard(
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    text=(
-                        f"Заказ #{order.id}"
-                    ),
-                    callback_data=(
-                        f"show_order:{order.id}"
-                    )
+                    text=(f"Заказ #{order.id}"),
+                    callback_data=(f"show_order:{order.id}"),
                 )
             ]
         )
@@ -32,6 +28,4 @@ def orders_list_keyboard(
         ]
     )
 
-    return InlineKeyboardMarkup(
-        inline_keyboard=keyboard
-    )
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

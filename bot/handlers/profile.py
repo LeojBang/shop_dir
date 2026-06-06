@@ -30,8 +30,8 @@ def normalize_phone(phone: str) -> str:
 
 @router.message(F.text == "👤 Профиль")
 async def profile(
-        message: Message,
-        session: AsyncSession,
+    message: Message,
+    session: AsyncSession,
 ):
     user = await user_repository.get_by_telegram_id(
         session=session,
@@ -52,8 +52,8 @@ async def profile(
 
 @router.callback_query(F.data == "edit_name")
 async def edit_name(
-        callback: CallbackQuery,
-        state: FSMContext,
+    callback: CallbackQuery,
+    state: FSMContext,
 ):
     await state.set_state(EditProfileState.waiting_name)
     await callback.message.answer("Введите ваше имя:", reply_markup=cancel_keyboard())
@@ -62,9 +62,9 @@ async def edit_name(
 
 @router.message(EditProfileState.waiting_name)
 async def save_name(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     name = message.text.strip()
 
@@ -89,8 +89,8 @@ async def save_name(
 
 @router.callback_query(F.data == "edit_phone")
 async def edit_phone(
-        callback: CallbackQuery,
-        state: FSMContext,
+    callback: CallbackQuery,
+    state: FSMContext,
 ):
     await state.set_state(EditProfileState.waiting_phone)
     await callback.message.answer(
@@ -99,16 +99,16 @@ async def edit_phone(
         "+79991234567\n"
         "89991234567\n"
         "+7 999 123-45-67",
-        reply_markup=cancel_keyboard()
+        reply_markup=cancel_keyboard(),
     )
     await callback.answer()
 
 
 @router.message(EditProfileState.waiting_phone)
 async def save_phone(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     raw = message.text.strip()
 
@@ -139,8 +139,8 @@ async def save_phone(
 
 @router.callback_query(F.data == "edit_address")
 async def edit_address(
-        callback: CallbackQuery,
-        state: FSMContext,
+    callback: CallbackQuery,
+    state: FSMContext,
 ):
     await state.set_state(EditProfileState.waiting_address)
     await callback.message.answer(
@@ -148,23 +148,22 @@ async def edit_address(
         "Найти пункт выдачи: ozon.ru/my/servicepoints\n\n"
         "Пример:\n"
         "г. Москва, ул. Ленина 15, ПВЗ Ozon",
-        reply_markup=cancel_keyboard()
+        reply_markup=cancel_keyboard(),
     )
     await callback.answer()
 
 
 @router.message(EditProfileState.waiting_address)
 async def save_address(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     address = message.text.strip()
 
     if len(address) < 10:
         await message.answer(
-            "❌ Адрес слишком короткий.\n"
-            "Укажите город, улицу и номер дома:"
+            "❌ Адрес слишком короткий.\n" "Укажите город, улицу и номер дома:"
         )
         return
 

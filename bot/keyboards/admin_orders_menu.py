@@ -19,10 +19,11 @@ def admin_orders_menu_keyboard():
                     callback_data="orders_status:processing",
                 )
             ],
-            [   InlineKeyboardButton(
+            [
+                InlineKeyboardButton(
                     text="✔️ Выполнены",
                     callback_data="orders_status:completed",
-            )
+                )
             ],
             [
                 InlineKeyboardButton(
@@ -35,6 +36,6 @@ def admin_orders_menu_keyboard():
                     text="⬅️ Назад",
                     callback_data="admin_back",
                 )
-            ]
+            ],
         ]
     )

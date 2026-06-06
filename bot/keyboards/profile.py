@@ -22,6 +22,6 @@ def profile_keyboard():
                     text="🏠 Адрес выдачи OZON",
                     callback_data="edit_address",
                 )
-            ]
+            ],
         ]
     )

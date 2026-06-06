@@ -27,6 +27,7 @@ router.message.filter(AdminFilter())
 
 # ── Вспомогательные функции ──────────────────────────────────────────────────
 
+
 def safe_user_info(user) -> tuple[str, str, str]:
     """Безопасно возвращает данные пользователя даже если user=None."""
     if user is None:
@@ -70,22 +71,27 @@ def orders_buttons_keyboard(orders) -> InlineKeyboardMarkup:
     buttons = []
     for order in orders:
         status = ORDER_STATUSES.get(order.status, order.status)
-        buttons.append([
-            InlineKeyboardButton(
-                text=f"№{order.id}  {status}  · {order.total_price} ₽",
-                callback_data=f"show_order:{order.id}",
-            )
-        ])
-    buttons.append([
-        InlineKeyboardButton(
-            text="◀️ Назад",
-            callback_data="admin_orders_menu",
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text=f"№{order.id}  {status}  · {order.total_price} ₽",
+                    callback_data=f"show_order:{order.id}",
+                )
+            ]
         )
-    ])
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                text="◀️ Назад",
+                callback_data="admin_orders_menu",
+            )
+        ]
+    )
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
 # ── Меню заказов ─────────────────────────────────────────────────────────────
+
 
 @router.callback_query(F.data == "admin_orders_menu")
 async def admin_orders_menu(callback: CallbackQuery):
@@ -98,10 +104,11 @@ async def admin_orders_menu(callback: CallbackQuery):
 
 # ── Активные заказы ──────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data == "admin_orders")
 async def admin_orders_button(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     orders = await order_repository.get_new_orders(session=session)
 
@@ -118,10 +125,11 @@ async def admin_orders_button(
 
 # ── Все заказы ───────────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data == "admin_orders_all")
 async def admin_orders_all(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     orders = await order_repository.get_all_orders(session=session)
 
@@ -138,10 +146,11 @@ async def admin_orders_all(
 
 # ── Детали заказа ────────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data.startswith("show_order:"))
 async def show_order(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     order_id = int(callback.data.split(":")[1])
     order = await order_repository.get_order(session=session, order_id=order_id)
@@ -163,6 +172,7 @@ async def show_order(
 
 # ── Фильтр по статусу ────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data == "orders_filters")
 async def orders_filters(callback: CallbackQuery):
     await callback.message.edit_text(
@@ -174,8 +184,8 @@ async def orders_filters(callback: CallbackQuery):
 
 @router.callback_query(F.data.startswith("orders_status:"))
 async def orders_by_status(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     status = callback.data.split(":")[1]
     orders = await order_repository.get_orders_by_status(
@@ -196,8 +206,8 @@ async def orders_by_status(
 
 @router.callback_query(F.data.startswith("back_to_status:"))
 async def back_to_status(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     status = callback.data.split(":")[1]
     orders = await order_repository.get_orders_by_status(
@@ -276,6 +286,7 @@ async def order_processing(callback: CallbackQuery, session: AsyncSession):
 
 # ── Трек-номер ───────────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data.startswith("tracking:"))
 async def tracking_number_start(callback: CallbackQuery, state: FSMContext):
     order_id = int(callback.data.split(":")[1])
@@ -287,9 +298,9 @@ async def tracking_number_start(callback: CallbackQuery, state: FSMContext):
 
 @router.message(TrackingState.waiting_tracking_number)
 async def save_tracking_number(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     data = await state.get_data()
     order_id = data["order_id"]

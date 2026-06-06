@@ -22,8 +22,8 @@ repository = CategoryRepository()
 
 @router.message(F.text == "📦 Каталог")
 async def catalog_button(
-        message: Message,
-        session: AsyncSession,
+    message: Message,
+    session: AsyncSession,
 ):
     categories = await repository.get_all(session=session)
 
@@ -35,8 +35,8 @@ async def catalog_button(
 
 @router.callback_query(F.data.startswith("category:"))
 async def category_callback(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     category_id = int(callback.data.split(":")[1])
 
@@ -59,8 +59,8 @@ async def category_callback(
 
 @router.callback_query(F.data == "catalog_back")
 async def catalog_back(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     categories = await repository.get_all(session=session)
 
@@ -74,8 +74,8 @@ async def catalog_back(
 
 @router.callback_query(F.data == "catalog_categories")
 async def catalog_categories(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     categories = await repository.get_all(session=session)
 
@@ -89,8 +89,8 @@ async def catalog_categories(
 
 @router.callback_query(F.data.startswith("product:"))
 async def product_view(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     product_id = int(callback.data.split(":")[1])
 
@@ -118,8 +118,8 @@ async def product_view(
 
 @router.callback_query(F.data.startswith("cart:"))
 async def add_to_cart(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     product_id = int(callback.data.split(":")[1])
     product = await session.get(Product, product_id)

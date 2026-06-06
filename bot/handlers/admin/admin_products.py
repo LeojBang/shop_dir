@@ -34,11 +34,10 @@ def progress_bar(step: int, total: int = 5) -> str:
 
 # ── Список товаров ───────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data == "products_list")
 async def products_list(callback: CallbackQuery, session: AsyncSession):
-    products = await product_repository.get_page(
-        session=session, offset=0, limit=5
-    )
+    products = await product_repository.get_page(session=session, offset=0, limit=5)
 
     if not products:
         await callback.message.edit_text("Товаров пока нет")
@@ -73,6 +72,7 @@ async def products_page(callback: CallbackQuery, session: AsyncSession):
 
 # ── Добавление товара — шаг 1: название ─────────────────────────────────────
 
+
 @router.callback_query(F.data == "product_add")
 async def product_add(callback: CallbackQuery, state: FSMContext):
     await state.set_state(AddProductState.waiting_name)
@@ -88,6 +88,7 @@ async def product_add(callback: CallbackQuery, state: FSMContext):
 
 
 # ── Шаг 2: описание ──────────────────────────────────────────────────────────
+
 
 @router.message(AddProductState.waiting_name)
 async def add_product_name(message: Message, state: FSMContext):
@@ -113,6 +114,7 @@ async def add_product_name(message: Message, state: FSMContext):
 
 # ── Шаг 3: цена ──────────────────────────────────────────────────────────────
 
+
 @router.message(AddProductState.waiting_description)
 async def add_product_description(message: Message, state: FSMContext):
     description = None if message.text.strip() == "-" else message.text.strip()
@@ -134,6 +136,7 @@ async def add_product_description(message: Message, state: FSMContext):
 
 
 # ── Шаг 4: остаток ───────────────────────────────────────────────────────────
+
 
 @router.message(AddProductState.waiting_price)
 async def add_product_price(message: Message, state: FSMContext):
@@ -164,11 +167,12 @@ async def add_product_price(message: Message, state: FSMContext):
 
 # ── Шаг 5: категория ─────────────────────────────────────────────────────────
 
+
 @router.message(AddProductState.waiting_stock)
 async def add_product_stock(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     try:
         stock = int(message.text.strip())
@@ -199,14 +203,15 @@ async def add_product_stock(
 
 # ── Финал: сохранение ────────────────────────────────────────────────────────
 
+
 @router.callback_query(
     AddProductState.waiting_category,
     F.data.startswith("select_category:"),
 )
 async def add_product_category(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     category_id = int(callback.data.split(":")[1])
     data = await state.get_data()
@@ -221,9 +226,7 @@ async def add_product_category(
     )
 
     category = await category_repository.get_all(session=session)
-    cat_name = next(
-        (c.name for c in category if c.id == category_id), "—"
-    )
+    cat_name = next((c.name for c in category if c.id == category_id), "—")
 
     await callback.message.edit_text(
         f"✅ <b>Товар успешно создан!</b>\n\n"

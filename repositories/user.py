@@ -11,9 +11,7 @@ class UserRepository:
         session: AsyncSession,
         telegram_id: int,
     ) -> User | None:
-        stmt = select(User).where(
-            User.telegram_id == telegram_id
-        )
+        stmt = select(User).where(User.telegram_id == telegram_id)
 
         result = await session.execute(stmt)
 
@@ -38,16 +36,12 @@ class UserRepository:
         return user
 
     async def update_fields(
-            self,
-            session,
-            user_id: int,
-            **fields,
+        self,
+        session,
+        user_id: int,
+        **fields,
     ):
-        await session.execute(
-            update(User)
-            .where(User.id == user_id)
-            .values(**fields)
-        )
+        await session.execute(update(User).where(User.id == user_id).values(**fields))
 
         await session.commit()
 

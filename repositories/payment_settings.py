@@ -9,9 +9,7 @@ class PaymentSettingsRepository:
 
     async def get(self, session: AsyncSession) -> PaymentSettings | None:
         """Возвращает текущие реквизиты из БД."""
-        result = await session.execute(
-            select(PaymentSettings).limit(1)
-        )
+        result = await session.execute(select(PaymentSettings).limit(1))
         return result.scalar_one_or_none()
 
     async def get_or_default(self, session: AsyncSession) -> PaymentSettings:

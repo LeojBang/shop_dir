@@ -5,8 +5,8 @@ from aiogram.types import (
 
 
 def product_card_keyboard(
-        product_id: int,
-        category_id: int,
+    product_id: int,
+    category_id: int,
 ):
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -21,6 +21,6 @@ def product_card_keyboard(
                     text="⬅️ К товарам",
                     callback_data=f"category:{category_id}",
                 )
-            ]
+            ],
         ]
     )

@@ -11,19 +11,13 @@ class OrderItem(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    order_id: Mapped[int] = mapped_column(
-        ForeignKey("orders.id")
-    )
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
 
-    product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id")
-    )
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
 
     quantity: Mapped[int]
 
-    price: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2)
-    )
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
 
     order = relationship(
         "Order",

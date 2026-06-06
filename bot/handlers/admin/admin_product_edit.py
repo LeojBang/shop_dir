@@ -9,7 +9,13 @@ from aiogram.types import CallbackQuery, Message
 from aiogram import F
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.states.product import EditPriceState, EditStockState, EditNameState, EditDescriptionState, EditProductCategory
+from bot.states.product import (
+    EditPriceState,
+    EditStockState,
+    EditNameState,
+    EditDescriptionState,
+    EditProductCategory,
+)
 from repositories.category import CategoryRepository
 from repositories.product import ProductRepository
 
@@ -19,16 +25,12 @@ product_repository = ProductRepository()
 category_repository = CategoryRepository()
 
 
-@router.callback_query(
-    F.data.startswith("edit_product:")
-)
+@router.callback_query(F.data.startswith("edit_product:"))
 async def edit_product(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
     product = await product_repository.get_by_id(
         session=session,
@@ -50,26 +52,19 @@ async def edit_product(
     )
 
     await callback.message.edit_text(
-        text,
-        reply_markup=edit_product_keyboard(
-            product.id
-        )
+        text, reply_markup=edit_product_keyboard(product.id)
     )
 
     await callback.answer()
 
 
-@router.callback_query(
-    F.data.startswith("price:")
-)
+@router.callback_query(F.data.startswith("price:"))
 async def price_edit(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
     product = await product_repository.get_by_id(
         session=session,
@@ -83,13 +78,9 @@ async def price_edit(
         )
         return
 
-    await state.update_data(
-        product_id=product_id
-    )
+    await state.update_data(product_id=product_id)
 
-    await state.set_state(
-        EditPriceState.waiting_price
-    )
+    await state.set_state(EditPriceState.waiting_price)
 
     await callback.message.answer(
         f"Введите новую цену для товара:\n\n"
@@ -100,22 +91,16 @@ async def price_edit(
     await callback.answer()
 
 
-@router.message(
-    EditPriceState.waiting_price
-)
+@router.message(EditPriceState.waiting_price)
 async def save_price(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     try:
-        price = Decimal(
-            message.text.replace(",", ".")
-        )
+        price = Decimal(message.text.replace(",", "."))
     except Exception:
-        await message.answer(
-            "Введите корректную цену"
-        )
+        await message.answer("Введите корректную цену")
         return
 
     data = await state.get_data()
@@ -129,25 +114,19 @@ async def save_price(
     )
 
     await message.answer(
-        f"✅ Цена обновлена\n\n"
-        f"{product.name}\n"
-        f"Новая цена: {product.price} ₽"
+        f"✅ Цена обновлена\n\n" f"{product.name}\n" f"Новая цена: {product.price} ₽"
     )
 
     await state.clear()
 
 
-@router.callback_query(
-    F.data.startswith("stock:")
-)
+@router.callback_query(F.data.startswith("stock:"))
 async def stock_edit(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
     product = await product_repository.get_by_id(
         session=session,
@@ -161,13 +140,9 @@ async def stock_edit(
         )
         return
 
-    await state.update_data(
-        product_id=product_id
-    )
+    await state.update_data(product_id=product_id)
 
-    await state.set_state(
-        EditStockState.waiting_stock
-    )
+    await state.set_state(EditStockState.waiting_stock)
 
     await callback.message.answer(
         f"Введите новый остаток для товара:\n\n"
@@ -178,18 +153,14 @@ async def stock_edit(
     await callback.answer()
 
 
-@router.message(
-    EditStockState.waiting_stock
-)
+@router.message(EditStockState.waiting_stock)
 async def save_stock(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     if not message.text.isdigit():
-        await message.answer(
-            "Введите число"
-        )
+        await message.answer("Введите число")
         return
 
     stock = int(message.text)
@@ -205,54 +176,41 @@ async def save_stock(
     )
 
     await message.answer(
-        f"✅ Остаток обновлен\n\n"
-        f"{product.name}\n"
-        f"Новый остаток: {product.stock}"
+        f"✅ Остаток обновлен\n\n" f"{product.name}\n" f"Новый остаток: {product.stock}"
     )
 
     await state.clear()
 
 
-@router.callback_query(
-    F.data.startswith("name:")
-)
+@router.callback_query(F.data.startswith("name:"))
 async def name_edit(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
     product = await product_repository.get_by_id(
         session=session,
         product_id=product_id,
     )
 
-    await state.update_data(
-        product_id=product_id
-    )
+    await state.update_data(product_id=product_id)
 
-    await state.set_state(
-        EditNameState.waiting_name
-    )
+    await state.set_state(EditNameState.waiting_name)
 
     await callback.message.answer(
-        f"Введите новое название\n\n"
-        f"Текущее:\n{product.name}"
+        f"Введите новое название\n\n" f"Текущее:\n{product.name}"
     )
 
     await callback.answer()
 
 
-@router.message(
-    EditNameState.waiting_name
-)
+@router.message(EditNameState.waiting_name)
 async def save_name(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     data = await state.get_data()
 
@@ -262,67 +220,50 @@ async def save_name(
         name=message.text,
     )
 
-    await message.answer(
-        f"✅ Название обновлено\n\n"
-        f"{product.name}"
-    )
+    await message.answer(f"✅ Название обновлено\n\n" f"{product.name}")
 
     await state.clear()
 
 
-@router.callback_query(
-    F.data.startswith("description:")
-)
+@router.callback_query(F.data.startswith("description:"))
 async def description_edit(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
     product = await product_repository.get_by_id(
         session=session,
         product_id=product_id,
     )
 
-    await state.update_data(
-        product_id=product_id
-    )
+    await state.update_data(product_id=product_id)
 
-    await state.set_state(
-        EditDescriptionState.waiting_description
-    )
+    await state.set_state(EditDescriptionState.waiting_description)
 
     await callback.message.answer(
-        f"Введите новое описание\n\n"
-        f"Текущее:\n{product.description}"
+        f"Введите новое описание\n\n" f"Текущее:\n{product.description}"
     )
 
     await callback.answer()
 
 
-@router.message(
-    EditDescriptionState.waiting_description
-)
+@router.message(EditDescriptionState.waiting_description)
 async def save_description(
-        message: Message,
-        state: FSMContext,
-        session: AsyncSession,
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
 ):
-    data = await state.get_data()
+    product_id = (await state.get_data())["product_id"]
 
-    product = await product_repository.update_fields(
+    await product_repository.update_fields(
         session=session,
-        product_id=data["product_id"],
-        description=message.text,
+        product_id=product_id,
+        description=message.text.strip(),
     )
 
-    await message.answer(
-        "✅ Описание обновлено"
-    )
-
+    await message.answer("✅ Описание обновлено")
     await state.clear()
 
 
@@ -387,12 +328,11 @@ async def save_description(
 #     await state.clear()
 
 
-# Найди и замени хендлер change_category:
 @router.callback_query(F.data.startswith("change_category:"))
 async def change_category(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     product_id = int(callback.data.split(":")[1])
 
@@ -410,15 +350,14 @@ async def change_category(
     await callback.answer()
 
 
-# Найди и замени хендлер save_category:
 @router.callback_query(
-    EditProductCategory.change_category,  # только в этом состоянии
+    EditProductCategory.change_category,
     F.data.startswith("select_category:"),
 )
 async def save_category(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
 ):
     category_id = int(callback.data.split(":")[1])
     data = await state.get_data()
@@ -430,45 +369,32 @@ async def save_category(
         category_id=category_id,
     )
 
-    await callback.message.edit_text(
-        f"✅ Категория обновлена\n\n"
-        f"📦 {product.name}"
-    )
+    await callback.message.edit_text(f"✅ Категория обновлена\n\n" f"📦 {product.name}")
 
     await state.clear()
     await callback.answer()
 
 
-@router.callback_query(
-    F.data.startswith("delete_product:")
-)
+@router.callback_query(F.data.startswith("delete_product:"))
 async def delete_product(
-        callback: CallbackQuery,
+    callback: CallbackQuery,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
     await callback.message.edit_text(
         "⚠️ Вы уверены, что хотите удалить товар?",
-        reply_markup=confirm_delete_keyboard(
-            product_id
-        )
+        reply_markup=confirm_delete_keyboard(product_id),
     )
 
     await callback.answer()
 
 
-@router.callback_query(
-    F.data.startswith("confirm_delete:")
-)
+@router.callback_query(F.data.startswith("confirm_delete:"))
 async def confirm_delete_product(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
     success = await product_repository.delete(
         session=session,
@@ -482,11 +408,6 @@ async def confirm_delete_product(
         )
         return
 
-    await callback.message.edit_text(
-        "✅ Товар удалён"
-    )
+    await callback.message.edit_text("✅ Товар удалён")
 
     await callback.answer()
-
-
-

@@ -17,11 +17,9 @@ async def admin_button(message: Message):
     )
 
 
-@router.callback_query(
-    F.data == "admin_back"
-)
+@router.callback_query(F.data == "admin_back")
 async def admin_back(
-        callback: CallbackQuery,
+    callback: CallbackQuery,
 ):
     await callback.message.edit_text(
         "⚙️ Админ-панель",
@@ -31,11 +29,9 @@ async def admin_back(
     await callback.answer()
 
 
-@router.callback_query(
-    F.data == "admin_products"
-)
+@router.callback_query(F.data == "admin_products")
 async def admin_products(
-        callback: CallbackQuery,
+    callback: CallbackQuery,
 ):
     await callback.message.edit_text(
         "📦 Управление товарами",

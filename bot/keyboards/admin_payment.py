@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup
 
 
 def payment_confirm_keyboard(
-        order_id: int,
+    order_id: int,
 ):
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -18,6 +18,6 @@ def payment_confirm_keyboard(
                     text="❌ Отклонить",
                     callback_data=f"reject_payment:{order_id}",
                 )
-            ]
+            ],
         ]
     )

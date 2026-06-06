@@ -5,10 +5,10 @@ from aiogram.types import (
 
 
 def product_view_keyboard(
-        category_id: int,
-        product_id: int,
-        index: int,
-        total: int,
+    category_id: int,
+    product_id: int,
+    index: int,
+    total: int,
 ):
     keyboard = [
         [
@@ -49,6 +49,4 @@ def product_view_keyboard(
         ]
     )
 
-    return InlineKeyboardMarkup(
-        inline_keyboard=keyboard
-    )
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

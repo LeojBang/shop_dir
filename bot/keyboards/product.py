@@ -15,4 +15,3 @@ def add_to_cart_keyboard(
             ]
         ]
     )
-

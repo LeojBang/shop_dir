@@ -12,8 +12,8 @@ order_repository = OrderRepository()
 
 @router.callback_query(F.data.startswith("confirm_payment:"))
 async def confirm_payment(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     order_id = int(callback.data.split(":")[1])
 
@@ -48,16 +48,15 @@ async def confirm_payment(
     )
 
     await callback.message.edit_text(
-        f"✅ Заказ №{order.id} — оплата подтверждена\n"
-        f"Статус: 📦 В обработке"
+        f"✅ Заказ №{order.id} — оплата подтверждена\n" f"Статус: 📦 В обработке"
     )
     await callback.answer()
 
 
 @router.callback_query(F.data.startswith("reject_payment:"))
 async def reject_payment(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     order_id = int(callback.data.split(":")[1])
 
@@ -97,7 +96,6 @@ async def reject_payment(
     )
 
     await callback.message.edit_text(
-        f"❌ Заказ №{order.id} — оплата отклонена\n"
-        f"Статус: Отменён"
+        f"❌ Заказ №{order.id} — оплата отклонена\n" f"Статус: Отменён"
     )
     await callback.answer()

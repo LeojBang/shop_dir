@@ -10,8 +10,6 @@ class CategoryRepository:
         self,
         session: AsyncSession,
     ) -> list[Category]:
-        result = await session.execute(
-            select(Category)
-        )
+        result = await session.execute(select(Category))
 
         return list(result.scalars().all())

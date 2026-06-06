@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import BigInteger
 from sqlalchemy import String, Text
@@ -10,9 +10,7 @@ from models.base import Base
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(
-        primary_key=True
-    )
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     telegram_id: Mapped[int] = mapped_column(
         BigInteger,
@@ -34,6 +32,4 @@ class User(Base):
     )
     username: Mapped[str | None]
 
-    created_at: Mapped[datetime] = mapped_column(
-        default=datetime.utcnow
-    )
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)

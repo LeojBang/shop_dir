@@ -6,10 +6,7 @@ def categories_keyboard(categories):
     builder = InlineKeyboardBuilder()
 
     for category in categories:
-        builder.button(
-            text=category.name,
-            callback_data=f"category:{category.id}"
-        )
+        builder.button(text=category.name, callback_data=f"category:{category.id}")
 
     builder.adjust(1)
 

@@ -17,10 +17,7 @@ MIN_ORDER_AMOUNT = 7000
 
 def build_cart_text(item, current_index: int, total: int, all_items) -> str:
     """Формирует текст карточки товара в корзине."""
-    total_sum = sum(
-        i.quantity * i.product.price
-        for i in all_items
-    )
+    total_sum = sum(i.quantity * i.product.price for i in all_items)
     item_sum = item.quantity * item.product.price
 
     lines = [
@@ -38,7 +35,9 @@ def build_cart_text(item, current_index: int, total: int, all_items) -> str:
     ]
 
     if total_sum < MIN_ORDER_AMOUNT:
-        lines.append(f"⚠️ Минимальный заказ {MIN_ORDER_AMOUNT} ₽ · не хватает {MIN_ORDER_AMOUNT - total_sum:.0f} ₽")
+        lines.append(
+            f"⚠️ Минимальный заказ {MIN_ORDER_AMOUNT} ₽ · не хватает {MIN_ORDER_AMOUNT - total_sum:.0f} ₽"
+        )
     else:
         lines.append("✅ Сумма заказа достаточна для оформления")
 
@@ -54,18 +53,14 @@ def build_cart_text(item, current_index: int, total: int, all_items) -> str:
 
 
 async def show_cart_page(
-        target,  # Message или CallbackQuery
-        session: AsyncSession,
-        page: int = 0,
-        edit: bool = False,
+    target,  # Message или CallbackQuery
+    session: AsyncSession,
+    page: int = 0,
+    edit: bool = False,
 ):
     """Универсальная функция показа страницы корзины."""
     # Получаем пользователя
-    tg_id = (
-        target.from_user.id
-        if isinstance(target, Message)
-        else target.from_user.id
-    )
+    tg_id = target.from_user.id if isinstance(target, Message) else target.from_user.id
 
     user = await user_repository.get_by_telegram_id(
         session=session,
@@ -113,12 +108,14 @@ async def show_cart_page(
 
 # ── Открыть корзину ──────────────────────────────────────────────────────────
 
+
 @router.message(F.text == "🛒 Корзина")
 async def cart_button(message: Message, session: AsyncSession):
     await show_cart_page(message, session, page=0, edit=False)
 
 
 # ── Навигация между товарами ─────────────────────────────────────────────────
+
 
 @router.callback_query(F.data.startswith("cart_page:"))
 async def cart_page(callback: CallbackQuery, session: AsyncSession):
@@ -128,6 +125,7 @@ async def cart_page(callback: CallbackQuery, session: AsyncSession):
 
 
 # ── Увеличить количество ─────────────────────────────────────────────────────
+
 
 @router.callback_query(F.data.startswith("plus:"))
 async def plus_handler(callback: CallbackQuery, session: AsyncSession):
@@ -168,6 +166,7 @@ async def plus_handler(callback: CallbackQuery, session: AsyncSession):
 
 # ── Уменьшить количество ─────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data.startswith("minus:"))
 async def minus_handler(callback: CallbackQuery, session: AsyncSession):
     cart_item_id = int(callback.data.split(":")[1])
@@ -201,6 +200,7 @@ async def minus_handler(callback: CallbackQuery, session: AsyncSession):
 
 # ── Удалить товар ────────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data.startswith("delete:"))
 async def delete_handler(callback: CallbackQuery, session: AsyncSession):
     cart_item_id = int(callback.data.split(":")[1])
@@ -210,9 +210,7 @@ async def delete_handler(callback: CallbackQuery, session: AsyncSession):
         telegram_id=callback.from_user.id,
     )
     items = await cart_repository.get_user_cart(session=session, user_id=user.id)
-    current_page = next(
-        (i for i, it in enumerate(items) if it.id == cart_item_id), 0
-    )
+    current_page = next((i for i, it in enumerate(items) if it.id == cart_item_id), 0)
 
     await cart_repository.remove_item(
         session=session,
@@ -240,6 +238,21 @@ async def delete_handler(callback: CallbackQuery, session: AsyncSession):
 
 # ── Оформить заказ ───────────────────────────────────────────────────────────
 
+
+async def _check_user_profile(user, callback) -> bool:
+    """Проверяет заполненность профиля. Возвращает False если что-то не заполнено."""
+    if not user.first_name:
+        await callback.answer("Заполните имя в профиле", show_alert=True)
+        return False
+    if not user.phone:
+        await callback.answer("Заполните телефон в профиле", show_alert=True)
+        return False
+    if not user.address:
+        await callback.answer("Заполните адрес в профиле", show_alert=True)
+        return False
+    return True
+
+
 @router.callback_query(F.data == "checkout")
 async def checkout_handler(callback: CallbackQuery, session: AsyncSession):
     from core.config import settings
@@ -251,21 +264,11 @@ async def checkout_handler(callback: CallbackQuery, session: AsyncSession):
         telegram_id=callback.from_user.id,
     )
 
-    if not user.first_name:
-        await callback.answer("Заполните имя в профиле", show_alert=True)
-        return
-    if not user.phone:
-        await callback.answer("Заполните телефон в профиле", show_alert=True)
-        return
-    if not user.address:
-        await callback.answer("Заполните адрес в профиле", show_alert=True)
+    if not await _check_user_profile(user, callback):
         return
 
     items = await cart_repository.get_user_cart(session=session, user_id=user.id)
-    total_price = sum(
-        item.quantity * float(item.product.price)
-        for item in items
-    )
+    total_price = sum(item.quantity * float(item.product.price) for item in items)
     if total_price < MIN_ORDER_AMOUNT:
         await callback.answer(
             f"Минимальная сумма заказа — {MIN_ORDER_AMOUNT} ₽\n"
@@ -287,10 +290,7 @@ async def checkout_handler(callback: CallbackQuery, session: AsyncSession):
             )
             return
 
-    total_price = sum(
-        item.quantity * float(item.product.price)
-        for item in items
-    )
+    total_price = sum(item.quantity * float(item.product.price) for item in items)
 
     try:
         order = await order_repository.create_order(
@@ -339,6 +339,7 @@ async def checkout_handler(callback: CallbackQuery, session: AsyncSession):
 
 # ── Кнопка "В каталог" из пустой корзины ────────────────────────────────────
 
+
 @router.callback_query(F.data == "open_catalog")
 async def open_catalog(callback: CallbackQuery, session: AsyncSession):
     from repositories.category import CategoryRepository
@@ -354,6 +355,7 @@ async def open_catalog(callback: CallbackQuery, session: AsyncSession):
 
 
 # ── Я оплатил ────────────────────────────────────────────────────────────────
+
 
 @router.callback_query(F.data.startswith("paid:"))
 async def paid_handler(callback: CallbackQuery, session: AsyncSession):
@@ -405,6 +407,7 @@ async def paid_handler(callback: CallbackQuery, session: AsyncSession):
 
 
 # ── Заглушка для некликабельных кнопок ──────────────────────────────────────
+
 
 @router.callback_query(F.data == "noop")
 async def noop(callback: CallbackQuery):

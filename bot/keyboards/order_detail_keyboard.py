@@ -5,7 +5,7 @@ from aiogram.types import (
 
 
 def order_detail_keyboard(
-        order,
+    order,
 ):
     keyboard = []
 
@@ -14,9 +14,7 @@ def order_detail_keyboard(
             [
                 InlineKeyboardButton(
                     text="✅ Подтвердить оплату",
-                    callback_data=(
-                        f"confirm_payment:{order.id}"
-                    )
+                    callback_data=(f"confirm_payment:{order.id}"),
                 )
             ]
         )
@@ -25,9 +23,7 @@ def order_detail_keyboard(
             [
                 InlineKeyboardButton(
                     text="❌ Отклонить оплату",
-                    callback_data=(
-                        f"reject_payment:{order.id}"
-                    )
+                    callback_data=(f"reject_payment:{order.id}"),
                 )
             ]
         )
@@ -37,10 +33,7 @@ def order_detail_keyboard(
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    text="🚚 Отправить",
-                    callback_data=(
-                        f"tracking:{order.id}"
-                    )
+                    text="🚚 Отправить", callback_data=(f"tracking:{order.id}")
                 )
             ]
         )
@@ -48,14 +41,9 @@ def order_detail_keyboard(
     keyboard.append(
         [
             InlineKeyboardButton(
-                text="⬅️ К списку",
-                callback_data=(
-                    f"back_to_status:{order.status}"
-                )
+                text="⬅️ К списку", callback_data=(f"back_to_status:{order.status}")
             )
         ]
     )
 
-    return InlineKeyboardMarkup(
-        inline_keyboard=keyboard
-    )
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

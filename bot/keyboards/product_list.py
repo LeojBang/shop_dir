@@ -5,8 +5,8 @@ from aiogram.types import (
 
 
 def products_list_keyboard(
-        products,
-        category_id: int,
+    products,
+    category_id: int,
 ):
     keyboard = []
 
@@ -14,8 +14,7 @@ def products_list_keyboard(
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    text=product.name,
-                    callback_data=f"product:{product.id}"
+                    text=product.name, callback_data=f"product:{product.id}"
                 )
             ]
         )
@@ -29,6 +28,4 @@ def products_list_keyboard(
         ]
     )
 
-    return InlineKeyboardMarkup(
-        inline_keyboard=keyboard
-    )
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

@@ -14,13 +14,18 @@ from bot.handlers.admin.admin_products import router as admin_products_router
 from bot.handlers.admin.admin_stats import router as admin_stats_router
 from bot.handlers.admin.admin_payments import router as admin_payments_router
 from bot.handlers.admin.admin_common import router as admin_common_router
-from bot.handlers.admin.admin_payment_settings import router as admin_payment_settings_router
+from bot.handlers.admin.admin_payment_settings import (
+    router as admin_payment_settings_router,
+)
 
 import logging
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
+
+
 async def main():
     bot = Bot(token=settings.BOT_TOKEN)
     await create_tables()

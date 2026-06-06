@@ -25,12 +25,14 @@ def orders_list_keyboard(orders) -> InlineKeyboardMarkup:
 
     for order in orders:
         status = ORDER_STATUSES.get(order.status, order.status)
-        buttons.append([
-            InlineKeyboardButton(
-                text=f"№{order.id}  {status}  · {order.total_price} ₽",
-                callback_data=f"order_detail:{order.id}",
-            )
-        ])
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text=f"№{order.id}  {status}  · {order.total_price} ₽",
+                    callback_data=f"order_detail:{order.id}",
+                )
+            ]
+        )
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
@@ -65,9 +67,7 @@ def build_order_detail_text(order) -> str:
 
     for item in order.items:
         price = item.price * item.quantity
-        lines.append(
-            f"• {item.product.name} × {item.quantity} = {price} ₽"
-        )
+        lines.append(f"• {item.product.name} × {item.quantity} = {price} ₽")
 
     if order.tracking_number:
         lines += [
@@ -83,10 +83,11 @@ def build_order_detail_text(order) -> str:
 
 # ── Список заказов ───────────────────────────────────────────────────────────
 
+
 @router.message(F.text == "📋 Мои заказы")
 async def my_orders(
-        message: Message,
-        session: AsyncSession,
+    message: Message,
+    session: AsyncSession,
 ):
     user = await user_repository.get_by_telegram_id(
         session=session,
@@ -116,10 +117,11 @@ async def my_orders(
 
 # ── Детали заказа ────────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data.startswith("order_detail:"))
 async def order_detail(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     order_id = int(callback.data.split(":")[1])
 
@@ -143,10 +145,11 @@ async def order_detail(
 
 # ── Назад к списку ───────────────────────────────────────────────────────────
 
+
 @router.callback_query(F.data == "my_orders_list")
 async def back_to_orders_list(
-        callback: CallbackQuery,
-        session: AsyncSession,
+    callback: CallbackQuery,
+    session: AsyncSession,
 ):
     user = await user_repository.get_by_telegram_id(
         session=session,

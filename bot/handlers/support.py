@@ -6,7 +6,7 @@ router = Router()
 
 @router.message(F.text == "☎️ Поддержка")
 async def support(
-        message: Message,
+    message: Message,
 ):
     await message.answer(
         "Для связи с менеджером:\n"

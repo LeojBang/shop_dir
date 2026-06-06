@@ -28,6 +28,7 @@ async def seed(session: AsyncSession) -> PaymentSettings:
 
 # ── get ───────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.asyncio
 async def test_get_returns_none_when_empty(session: AsyncSession):
     """get() возвращает None если таблица пустая."""
@@ -46,8 +47,11 @@ async def test_get_returns_record_when_exists(session: AsyncSession):
 
 # ── get_or_default ────────────────────────────────────────────────────────────
 
+
 @pytest.mark.asyncio
-async def test_get_or_default_creates_from_env_when_empty(session: AsyncSession, monkeypatch):
+async def test_get_or_default_creates_from_env_when_empty(
+    session: AsyncSession, monkeypatch
+):
     """get_or_default() создаёт запись из .env если таблица пустая."""
     monkeypatch.setattr(repo_module.env_settings, "PAYMENT_BANK_NAME", BANK)
     monkeypatch.setattr(repo_module.env_settings, "PAYMENT_RECIPIENT", RECIPIENT)
@@ -62,13 +66,17 @@ async def test_get_or_default_creates_from_env_when_empty(session: AsyncSession,
 
 
 @pytest.mark.asyncio
-async def test_get_or_default_returns_existing_record(session: AsyncSession, monkeypatch):
+async def test_get_or_default_returns_existing_record(
+    session: AsyncSession, monkeypatch
+):
     """get_or_default() возвращает существующую запись без создания новой."""
     await seed(session)
 
     monkeypatch.setattr(repo_module.env_settings, "PAYMENT_BANK_NAME", "OTHER BANK")
     monkeypatch.setattr(repo_module.env_settings, "PAYMENT_RECIPIENT", "Другой Человек")
-    monkeypatch.setattr(repo_module.env_settings, "PAYMENT_CARD_NUMBER", "0000000000000000")
+    monkeypatch.setattr(
+        repo_module.env_settings, "PAYMENT_CARD_NUMBER", "0000000000000000"
+    )
 
     result = await repo.get_or_default(session)
 
@@ -78,7 +86,9 @@ async def test_get_or_default_returns_existing_record(session: AsyncSession, mon
 
 
 @pytest.mark.asyncio
-async def test_get_or_default_does_not_create_duplicate(session: AsyncSession, monkeypatch):
+async def test_get_or_default_does_not_create_duplicate(
+    session: AsyncSession, monkeypatch
+):
     """get_or_default() не создаёт вторую запись при повторном вызове."""
     monkeypatch.setattr(repo_module.env_settings, "PAYMENT_BANK_NAME", BANK)
     monkeypatch.setattr(repo_module.env_settings, "PAYMENT_RECIPIENT", RECIPIENT)
@@ -89,13 +99,12 @@ async def test_get_or_default_does_not_create_duplicate(session: AsyncSession, m
 
     assert first.id == second.id
 
-    count = await session.scalar(
-        select(func.count()).select_from(PaymentSettings)
-    )
+    count = await session.scalar(select(func.count()).select_from(PaymentSettings))
     assert count == 1
 
 
 # ── update ────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_update_bank_name(session: AsyncSession):
@@ -104,8 +113,8 @@ async def test_update_bank_name(session: AsyncSession):
     result = await repo.update(session, bank_name="НОВЫЙ БАНК")
 
     assert result.bank_name == "НОВЫЙ БАНК"
-    assert result.recipient == RECIPIENT   # не изменился
-    assert result.card_number == CARD      # не изменился
+    assert result.recipient == RECIPIENT  # не изменился
+    assert result.card_number == CARD  # не изменился
 
 
 @pytest.mark.asyncio
@@ -115,7 +124,7 @@ async def test_update_recipient(session: AsyncSession):
     result = await repo.update(session, recipient="Сидоров Сидор")
 
     assert result.recipient == "Сидоров Сидор"
-    assert result.bank_name == BANK        # не изменился
+    assert result.bank_name == BANK  # не изменился
 
 
 @pytest.mark.asyncio
@@ -125,7 +134,7 @@ async def test_update_card_number(session: AsyncSession):
     result = await repo.update(session, card_number="5555666677778888")
 
     assert result.card_number == "5555666677778888"
-    assert result.bank_name == BANK        # не изменился
+    assert result.bank_name == BANK  # не изменился
 
 
 @pytest.mark.asyncio

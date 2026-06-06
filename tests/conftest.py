@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 import pytest_asyncio
 from decimal import Decimal
 
@@ -12,11 +12,10 @@ from models.base import Base
 from models.user import User
 from models.category import Category
 from models.product import Product
-from models.order import Order
-from models.order_item import OrderItem
-from models.cart_item import CartItem
-from models.payment_settings import PaymentSettings
-
+from models.order import Order  # noqa: F401
+from models.order_item import OrderItem  # noqa: F401
+from models.cart_item import CartItem  # noqa: F401
+from models.payment_settings import PaymentSettings  # noqa: F401
 
 
 # Используем SQLite в памяти — не нужен PostgreSQL для тестов
@@ -47,6 +46,7 @@ async def session():
 
 
 # ── Вспомогательные фабрики ──────────────────────────────────────────────────
+
 
 async def make_user(
     session: AsyncSession,
