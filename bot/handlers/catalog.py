@@ -98,9 +98,9 @@ async def product_view(
 
     text = (
         f"📦 {product.name}\n\n"
+        f"{product.description or ''}\n\n"
         f"💰 Цена: {product.price} ₽\n"
         f"📦 Остаток: {product.stock}\n\n"
-        f"{product.description or ''}"
     )
 
     await callback.message.delete()
