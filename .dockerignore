@@ -1,6 +1,13 @@
 .venv
-.idea
 .git
+.gitignore
+.env
 __pycache__
 *.pyc
-.env
+*.pyo
+*.pyd
+.idea
+.vscode
+tests/
+*.md
+*.sql

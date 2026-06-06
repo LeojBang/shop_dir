@@ -19,11 +19,10 @@ def admin_orders_menu_keyboard():
                     callback_data="orders_status:processing",
                 )
             ],
-            [
-                InlineKeyboardButton(
-                    text="🚚 Отправлены",
-                    callback_data="orders_status:shipped",
-                )
+            [   InlineKeyboardButton(
+                    text="✔️ Выполнены",
+                    callback_data="orders_status:completed",
+            )
             ],
             [
                 InlineKeyboardButton(

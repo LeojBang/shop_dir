@@ -25,18 +25,6 @@ def orders_filter_keyboard():
             ],
             [
                 InlineKeyboardButton(
-                    text="🚚 Отправлены",
-                    callback_data="orders_status:shipped",
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="✔️ Выполнены",
-                    callback_data="orders_status:completed",
-                )
-            ],
-            [
-                InlineKeyboardButton(
                     text="❌ Отменены",
                     callback_data="orders_status:cancelled",
                 )

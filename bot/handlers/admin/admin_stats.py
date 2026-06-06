@@ -16,25 +16,19 @@ async def admin_stats(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    orders = await order_repository.get_stats_orders(
-        session=session
-    )
 
+    all_orders = await order_repository.get_all_orders(session=session)
+    completed = [o for o in all_orders if o.status == "completed"]
+    cancelled = [o for o in all_orders if o.status == "cancelled"]
+    revenue = sum(float(o.total_price) for o in completed)
 
-    completed_orders = [
-        o for o in orders
-        if o.status == "completed"
-    ]
-
-    total_revenue = sum(
-        float(o.total_price)
-        for o in completed_orders
-    )
-
-    await callback.message.answer(
-        f"📊 Статистика\n\n"
-        f"Заказов всего: {len(completed_orders)}\n"
-        f"Выручка: {total_revenue:.2f} ₽"
+    await callback.message.edit_text(
+        f"📊 <b>Статистика</b>\n\n"
+        f"✅ Выполнено заказов: {len(completed)}\n"
+        f"❌ Отменено: {len(cancelled)}\n"
+        f"📦 Всего заказов: {len(all_orders)}\n\n"
+        f"💰 Выручка: {revenue:.2f} ₽",
+        parse_mode="HTML",
     )
 
     await callback.answer()

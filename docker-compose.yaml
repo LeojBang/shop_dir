@@ -2,6 +2,7 @@ services:
 
   db:
     image: postgres:17
+    container_name: shop_db
 
     env_file:
       - .env
@@ -9,16 +10,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    networks:
+      - shop_net
+
     restart: unless-stopped
 
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
 
   bot:
     build: .
+    container_name: shop_bot
 
     env_file:
       - .env
@@ -27,7 +33,14 @@ services:
       db:
         condition: service_healthy
 
+    networks:
+      - shop_net
+
     restart: unless-stopped
+
+networks:
+  shop_net:
+    driver: bridge
 
 volumes:
   postgres_data:

@@ -60,14 +60,9 @@ def order_status_keyboard(
             )
         ])
 
-    elif status == "shipped":
-        buttons.append([
-            InlineKeyboardButton(
-                text="✔️ Выполнен",
-                callback_data=f"order_complete:{order_id}",
-            )
-        ])
-
-    return InlineKeyboardMarkup(
-        inline_keyboard=buttons
-    )
+    # Кнопка назад — возвращает в список заказов с тем же статусом
+    buttons.append([InlineKeyboardButton(
+        text="◀️ Назад к списку",
+        callback_data="admin_orders_all",
+    )])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)

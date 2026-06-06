@@ -9,7 +9,7 @@ from aiogram.types import CallbackQuery, Message
 from aiogram import F
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.states.product import EditPriceState, EditStockState, EditNameState, EditDescriptionState
+from bot.states.product import EditPriceState, EditStockState, EditNameState, EditDescriptionState, EditProductCategory
 from repositories.category import CategoryRepository
 from repositories.product import ProductRepository
 
@@ -387,50 +387,41 @@ async def save_description(
 #     await state.clear()
 
 
-@router.callback_query(
-    F.data.startswith("change_category:")
-)
+# Найди и замени хендлер change_category:
+@router.callback_query(F.data.startswith("change_category:"))
 async def change_category(
         callback: CallbackQuery,
         state: FSMContext,
         session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
-    await state.update_data(
-        product_id=product_id
-    )
+    await state.update_data(product_id=product_id)
 
-    categories = await category_repository.get_all(
-        session=session
-    )
+    # Ставим состояние — чтобы отличить от создания товара
+    await state.set_state(EditProductCategory.change_category)
+
+    categories = await category_repository.get_all(session=session)
 
     await callback.message.answer(
-        "Выберите категорию:",
-        reply_markup=categories_select_keyboard(
-            categories
-        )
+        "Выберите новую категорию:",
+        reply_markup=categories_select_keyboard(categories),
     )
-
     await callback.answer()
 
 
+# Найди и замени хендлер save_category:
 @router.callback_query(
-    F.data.startswith("set_category:")
+    EditProductCategory.change_category,  # только в этом состоянии
+    F.data.startswith("select_category:"),
 )
 async def save_category(
         callback: CallbackQuery,
         state: FSMContext,
         session: AsyncSession,
 ):
-    category_id = int(
-        callback.data.split(":")[1]
-    )
-
+    category_id = int(callback.data.split(":")[1])
     data = await state.get_data()
-
     product_id = data["product_id"]
 
     product = await product_repository.update_fields(
@@ -441,9 +432,10 @@ async def save_category(
 
     await callback.message.edit_text(
         f"✅ Категория обновлена\n\n"
-        f"{product.name}"
+        f"📦 {product.name}"
     )
 
+    await state.clear()
     await callback.answer()
 
 

@@ -11,7 +11,7 @@ def categories_edit_keyboard(categories):
         buttons.append([
             InlineKeyboardButton(
                 text=category.name,
-                callback_data=f"set_category:{category.id}",
+                callback_data=f"select_category:{category.id}",
             )
         ])
 

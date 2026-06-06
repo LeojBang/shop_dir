@@ -15,6 +15,9 @@ from models.product import Product
 from models.order import Order
 from models.order_item import OrderItem
 from models.cart_item import CartItem
+from models.payment_settings import PaymentSettings
+
+
 
 # Используем SQLite в памяти — не нужен PostgreSQL для тестов
 DATABASE_URL = "sqlite+aiosqlite:///:memory:"

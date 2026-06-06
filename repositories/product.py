@@ -14,7 +14,7 @@ class ProductRepository:
             select(Product).where(
                 Product.category_id == category_id,
                 Product.stock > 0,
-            )
+            ).order_by(Product.name)
         )
 
         return list(result.scalars().all())
@@ -27,7 +27,7 @@ class ProductRepository:
         result = await session.execute(
             select(Product).where(
                 Product.id == product_id
-            )
+            ).order_by(Product.name)
         )
 
         return result.scalar_one_or_none()
@@ -38,7 +38,7 @@ class ProductRepository:
     ):
         result = await session.execute(
             select(Product)
-            .order_by(Product.id)
+            .order_by(Product.name)
         )
 
         return result.scalars().all()

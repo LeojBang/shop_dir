@@ -1,5 +1,4 @@
-from aiogram.types import InlineKeyboardButton
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def admin_menu_keyboard():
@@ -22,7 +21,12 @@ def admin_menu_keyboard():
                     text="📊 Статистика",
                     callback_data="admin_stats",
                 )
-            ]
+            ],
+            [
+                InlineKeyboardButton(
+                    text="💳 Реквизиты оплаты",
+                    callback_data="admin_payment_settings",
+                )
+            ],
         ]
     )
-

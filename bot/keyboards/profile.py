@@ -19,7 +19,7 @@ def profile_keyboard():
             ],
             [
                 InlineKeyboardButton(
-                    text="🏠 Адрес",
+                    text="🏠 Адрес выдачи OZON",
                     callback_data="edit_address",
                 )
             ]

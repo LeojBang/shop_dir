@@ -45,19 +45,6 @@ def order_detail_keyboard(
             ]
         )
 
-    elif order.status == "shipped":
-
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    text="✅ Завершить",
-                    callback_data=(
-                        f"order_complete:{order.id}"
-                    )
-                )
-            ]
-        )
-
     keyboard.append(
         [
             InlineKeyboardButton(

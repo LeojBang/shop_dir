@@ -1,7 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import Message
-
-from aiogram.types import CallbackQuery
+from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.product_card import product_card_keyboard
@@ -22,35 +20,25 @@ router = Router()
 repository = CategoryRepository()
 
 
-@router.message(
-    F.text == "📦 Каталог"
-)
+@router.message(F.text == "📦 Каталог")
 async def catalog_button(
         message: Message,
         session: AsyncSession,
 ):
-    categories = await repository.get_all(
-        session=session
-    )
+    categories = await repository.get_all(session=session)
 
     await message.answer(
         "🏋️ Категории товаров",
-        reply_markup=categories_keyboard(
-            categories
-        )
+        reply_markup=categories_keyboard(categories),
     )
 
 
-@router.callback_query(
-    F.data.startswith("category:")
-)
+@router.callback_query(F.data.startswith("category:"))
 async def category_callback(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    category_id = int(
-        callback.data.split(":")[1]
-    )
+    category_id = int(callback.data.split(":")[1])
 
     products = await product_repository.get_by_category(
         session=session,
@@ -58,79 +46,55 @@ async def category_callback(
     )
 
     if not products:
-        await callback.answer(
-            "Товаров нет"
-        )
+        await callback.answer("Товаров нет")
         return
 
     await callback.message.edit_text(
         "📦 Выберите товар",
-        reply_markup=products_list_keyboard(
-            products,
-            category_id,
-        )
+        reply_markup=products_list_keyboard(products, category_id),
     )
 
     await callback.answer()
 
 
-@router.callback_query(
-    F.data == "catalog_back"
-)
+@router.callback_query(F.data == "catalog_back")
 async def catalog_back(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    categories = await repository.get_all(
-        session=session
-    )
+    categories = await repository.get_all(session=session)
 
     await callback.message.answer(
         "🏋️ Категории товаров",
-        reply_markup=categories_keyboard(
-            categories
-        )
+        reply_markup=categories_keyboard(categories),
     )
 
     await callback.answer()
 
 
-@router.callback_query(
-    F.data == "catalog_categories"
-)
+@router.callback_query(F.data == "catalog_categories")
 async def catalog_categories(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    categories = await repository.get_all(
-        session=session
-    )
+    categories = await repository.get_all(session=session)
 
     await callback.message.edit_text(
         "🏋️ Категории товаров",
-        reply_markup=categories_keyboard(
-            categories
-        )
+        reply_markup=categories_keyboard(categories),
     )
 
     await callback.answer()
 
 
-@router.callback_query(
-    F.data.startswith("product:")
-)
+@router.callback_query(F.data.startswith("product:"))
 async def product_view(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
+    product_id = int(callback.data.split(":")[1])
 
-    product = await session.get(
-        Product,
-        product_id,
-    )
+    product = await session.get(Product, product_id)
 
     text = (
         f"📦 {product.name}\n\n"
@@ -146,37 +110,26 @@ async def product_view(
         reply_markup=product_card_keyboard(
             product.id,
             product.category_id,
-        )
+        ),
     )
 
     await callback.answer()
 
 
-@router.callback_query(lambda c: c.data.startswith("cart:"))
+@router.callback_query(F.data.startswith("cart:"))
 async def add_to_cart(
         callback: CallbackQuery,
         session: AsyncSession,
 ):
-    product_id = int(
-        callback.data.split(":")[1]
-    )
-    product = await session.get(
-        Product,
-        product_id,
-    )
+    product_id = int(callback.data.split(":")[1])
+    product = await session.get(Product, product_id)
 
     if not product:
-        await callback.answer(
-            "Товар не найден",
-            show_alert=True,
-        )
+        await callback.answer("Товар не найден", show_alert=True)
         return
 
     if product.stock <= 0:
-        await callback.answer(
-            "Товар закончился",
-            show_alert=True,
-        )
+        await callback.answer("Товар закончился", show_alert=True)
         return
 
     user = await user_repository.get_by_telegram_id(
@@ -185,10 +138,7 @@ async def add_to_cart(
     )
 
     if user is None:
-        await callback.answer(
-            "Сначала выполните /start",
-            show_alert=True,
-        )
+        await callback.answer("Сначала выполните /start", show_alert=True)
         return
 
     await cart_repository.add_product(
@@ -197,6 +147,4 @@ async def add_to_cart(
         product_id=product_id,
     )
 
-    await callback.answer(
-        "Товар добавлен в корзину ✅"
-    )
+    await callback.answer("Товар добавлен в корзину ✅")

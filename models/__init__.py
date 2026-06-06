@@ -4,6 +4,7 @@ from models.product import Product
 from models.cart_item import CartItem
 from models.order import Order
 from models.order_item import OrderItem
+from models.payment_settings import PaymentSettings
 
 __all__ = (
     "User",
@@ -12,4 +13,5 @@ __all__ = (
     "CartItem",
     "Order",
     "OrderItem",
+    "PaymentSettings",
 )

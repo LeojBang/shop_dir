@@ -90,11 +90,7 @@ class OrderRepository:
         result = await session.execute(
             select(Order)
             .where(
-                Order.status.in_([
-                    "waiting_payment",
-                    "processing",
-                    "shipped",
-                ])
+                Order.status.in_(["waiting_payment", "payment_check", "processing"])
             )
             .options(
                 selectinload(Order.items)
