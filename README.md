@@ -1,291 +1,197 @@
-# 🛒 Telegram Shop Bot
+# 🛒 ShopPeptid Bot
 
-Полнофункциональный интернет-магазин в Telegram, реализованный на **Python**, **Aiogram 3**, **SQLAlchemy**, **PostgreSQL** и **Docker**.
+<div align="center">
 
-## 🚀 Возможности
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Aiogram](https://img.shields.io/badge/Aiogram-3.x-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 
-### Для пользователей
+Полнофункциональный магазин в Telegram с каталогом товаров, корзиной, оплатой и админ-панелью.
 
-* Просмотр каталога товаров
-* Категории товаров
-* Корзина покупок
-* Оформление заказов
-* История заказов
-* Профиль пользователя
-* Поддержка клиентов
-* Оплата по реквизитам
-* Отслеживание статуса заказа
-
-### Для администратора
-
-* Управление товарами
-* Добавление товаров
-* Редактирование товаров
-* Удаление товаров
-* Управление заказами
-* Изменение статусов заказов
-* Добавление трек-номеров отправлений
-* Просмотр статистики продаж
-* Просмотр платежей
+</div>
 
 ---
 
-# 🏗 Архитектура проекта
+## ✨ Возможности
 
-Проект построен по принципам разделения ответственности:
+### 👤 Для покупателей
+| Функция | Описание |
+|---|---|
+| 📦 Каталог | Товары по категориям с остатками на складе |
+| 🛒 Корзина | Добавление, изменение количества, удаление |
+| 🧾 Оформление | Минимальная сумма заказа, бесплатная доставка |
+| 💳 Оплата | Перевод на карту с подтверждением |
+| 📋 История | Список заказов с деталями и трек-номером |
+| 👤 Профиль | Имя, телефон, адрес ПВЗ Ozon |
+| ☎️ Поддержка | Контакты менеджера |
 
-```text
-bot/
-├── handlers/
-├── keyboards/
-├── middlewares/
-├── states/
-├── repositories/
-├── filters/
-└── utils/
+### ⚙️ Для администратора
+| Функция | Описание |
+|---|---|
+| 📦 Товары | Добавление, редактирование, удаление |
+| 🧾 Заказы | Просмотр, смена статуса, трек-номер |
+| 💳 Оплата | Подтверждение и отклонение оплаты |
+| 💰 Реквизиты | Смена банка/карты прямо из бота |
+| 📊 Статистика | Выручка, топ товаров, график по дням |
 
-core/
-├── config.py
-├── database.py
-└── database_init.py
+---
 
-models/
-├── user.py
-├── product.py
-├── category.py
-├── cart_item.py
-├── order.py
-└── order_item.py
+## 🏗 Архитектура
 
-services/
-└──user.py
-
-tests/
-├── conftest.py
-├── test_cart_repository.py
-├── test_category_repository.py
-├── test_order_repository.py
-├── test_product_repository.py
-├── test_user_repository.py
-└── test_user_service.py
+```
+shop_dir/
+├── bot/
+│   ├── handlers/          # Обработчики сообщений и callback
+│   │   └── admin/         # Админские хендлеры
+│   ├── keyboards/         # Inline и Reply клавиатуры
+│   ├── middlewares/       # Database, Antispam, Error
+│   ├── states/            # FSM состояния
+│   ├── filters/           # AdminFilter
+│   └── utils/             # Вспомогательные утилиты
+├── core/
+│   ├── config.py          # Настройки через pydantic-settings
+│   ├── database.py        # Подключение к БД
+│   ├── database_init.py   # Инициализация таблиц
+│   └── logger.py          # Настройка логирования
+├── models/                # SQLAlchemy модели
+├── repositories/          # Слой работы с БД
+├── services/              # Бизнес-логика
+├── migrations/            # Alembic миграции
+├── tests/                 # Pytest тесты
+├── logs/                  # Логи (gitignore)
+├── Dockerfile
+└── docker-compose.yaml
 ```
 
-### Используемые паттерны
-
-* Repository Pattern
-* Service Layer
-* Dependency Injection
-* FSM (Finite State Machine)
-* Middleware
+### Паттерны
+- **Repository Pattern** — изоляция работы с БД
+- **Service Layer** — бизнес-логика отдельно от хендлеров
+- **Middleware** — обработка ошибок, антиспам, сессии БД
+- **FSM** — управление состояниями диалогов
 
 ---
 
-# 🛠 Технологии
+## 🛠 Стек технологий
 
-* Python 3.12
-* Aiogram 3
-* SQLAlchemy 2.0
-* PostgreSQL
-* AsyncPG
-* Alembic
-* Docker
-* Docker Compose
-* Pytest
-* Pytest-Asyncio
+- **Python 3.12** + **Aiogram 3** — бот
+- **SQLAlchemy 2.0** + **AsyncPG** — асинхронная работа с БД
+- **PostgreSQL 17** — база данных
+- **Alembic** — миграции
+- **Docker** + **Docker Compose** — контейнеризация
+- **GitHub Actions** — CI/CD
+- **Pytest** + **pytest-asyncio** — тесты на SQLite in-memory
+- **Black** + **Flake8** — форматирование и линтинг
 
 ---
 
-# 📦 Установка
+## 🚀 Быстрый старт
 
-## Клонирование репозитория
+### 1. Клонировать репозиторий
 
 ```bash
-git clone https://github.com/USERNAME/shop_bot.git
-
-cd shop_bot
+git clone https://github.com/USERNAME/shop_dir.git
+cd shop_dir
 ```
 
-## Создание .env
+### 2. Создать `.env`
 
 ```env
 BOT_TOKEN=your_bot_token
 
-DB_HOST=
-DB_PORT=
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=shop_bot
+DB_USER=postgres
+DB_PASSWORD=your_password
 
-POSTGRES_DB=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
+POSTGRES_DB=shop_bot
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
 
-# Реквизиты для оплаты
-PAYMENT_BANK_NAME=
-PAYMENT_RECIPIENT=
-PAYMENT_CARD_NUMBER=
+# Реквизиты оплаты
+PAYMENT_BANK_NAME=OZON BANK
+PAYMENT_RECIPIENT=Иванов Иван
+PAYMENT_CARD_NUMBER=2200000000000000
 
-# ID администраторов через запятую
-ADMIN_IDS=
+# ID администраторов (через запятую)
+ADMIN_IDS=[123456789]
+```
+
+### 3. Запустить
+
+```bash
+docker compose up -d --build
+docker compose exec bot alembic upgrade head
+```
+
+### 4. Проверить
+
+```bash
+docker compose ps
+docker compose logs bot -f
 ```
 
 ---
 
-# 🐳 Запуск через Docker
-
-Сборка контейнеров:
+## 🧪 Тесты
 
 ```bash
-docker compose build
+# Все тесты
+python -m pytest tests/ -v
+
+# С покрытием
+python -m pytest tests/ -v --cov=repositories --cov=services --cov-report=term-missing
 ```
 
-Запуск:
-
-```bash
-docker compose up -d
-```
-
-Проверка логов:
-
-```bash
-docker compose logs -f
-```
-
-Остановка:
-
-```bash
-docker compose down
-```
+**Покрыто тестами:** `UserRepository`, `ProductRepository`, `CartRepository`, `OrderRepository`, `UserService`, `PaymentSettingsRepository` — 48 тестов.
 
 ---
 
-# 🗄 Работа с базой данных
-
-Подключение к PostgreSQL внутри контейнера:
+## 🗄 База данных
 
 ```bash
+# Зайти в psql
 docker compose exec db psql -U postgres -d shop_bot
+
+# Применить миграции
+docker compose exec bot alembic upgrade head
+
+# Создать новую миграцию
+docker compose exec bot alembic revision --autogenerate -m "description"
 ```
 
-Просмотр таблиц:
+## 📊 CI/CD
 
-```sql
-\dt
-```
+При пуше в `main`:
+1. Запускаются тесты + Black + Flake8
+2. При успехе — деплой на сервер по SSH
+3. `git pull` → `docker compose build` → `alembic upgrade head`
+
+Для настройки добавить в GitHub Secrets: `SERVER_HOST`, `SERVER_USER`, `SERVER_SSH_KEY`.
 
 ---
 
-# 📥 Перенос данных
+## 📋 Статусы заказов
 
-Создание дампа:
-
-```bash
-pg_dump -U postgres -d shop_bot > shop_bot.sql
+```
+waiting_payment → payment_check → processing → completed
+                                             ↘ cancelled
 ```
 
-Восстановление в Docker:
-
-```bash
-cat shop_bot.sql | docker compose exec -T db psql -U postgres -d shop_bot
-```
+| Статус | Описание |
+|---|---|
+| `waiting_payment` | Ожидает оплату |
+| `payment_check` | Пользователь нажал «Я оплатил» |
+| `processing` | Оплата подтверждена, готовится к отправке |
+| `completed` | Отправлен, трек-номер добавлен |
+| `cancelled` | Отменён, товары возвращены на склад |
 
 ---
 
-# 🧪 Тестирование
+## 👨‍💻 Автор
 
-Запуск всех тестов:
+**Максим Меркулов** — Python Backend Developer
 
-```bash
-pytest -v
-```
-
-Запуск с покрытием:
-
-```bash
-python -m pytest --cov=repositories --cov=services --cov-report=html
-```
-
-Отчёт будет доступен в папке:
-
-```text
-htmlcov/
-```
-
----
-
-# 📊 Покрытие тестами
-
-Покрыты тестами:
-
-* UserRepository
-* ProductRepository
-* CartRepository
-* CategoryRepository
-* OrderRepository
-* UserService
-
-Текущее покрытие проекта:
-
-```text
-36 tests passed
-```
-
----
-
-# 📋 Основные сущности
-
-### User
-
-Пользователь Telegram.
-
-### Category
-
-Категория товаров.
-
-### Product
-
-Товар магазина.
-
-### CartItem
-
-Товар в корзине пользователя.
-
-### Order
-
-Заказ пользователя.
-
-### OrderItem
-
-Позиция внутри заказа.
-
----
-
-# 🔒 Возможные улучшения
-
-* Интеграция платежных систем
-* Redis для FSM
-* Celery для фоновых задач
-* Админ-панель через Web UI
-* Логи и мониторинг
-* CI/CD через GitHub Actions
-* Автоматический деплой на Yandex Cloud
-
----
-
-# 👨‍💻 Автор
-
-Максим Меркулов
-
-Python Backend Developer
-
-Стек:
-
-* Python
-* FastAPI
-* Django
-* SQLAlchemy
-* PostgreSQL
-* Docker
-* Aiogram
-* Git
-* Linux
+`Python` · `Aiogram` · `FastAPI` · `Django` · `SQLAlchemy` · `PostgreSQL` · `Docker`
