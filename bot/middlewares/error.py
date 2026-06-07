@@ -44,7 +44,9 @@ class ErrorMiddleware(BaseMiddleware):
 
         if event.message:
             user_id = event.message.from_user.id if event.message.from_user else None
-            username = event.message.from_user.username if event.message.from_user else None
+            username = (
+                event.message.from_user.username if event.message.from_user else None
+            )
             context = f"message: {event.message.text or '(нет текста)'}"
 
             # Сообщаем пользователю
