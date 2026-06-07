@@ -1,8 +1,8 @@
 import re
 
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.cancel import cancel_keyboard

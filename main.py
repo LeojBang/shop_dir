@@ -4,22 +4,22 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from core.config import settings
-from core.database_init import create_tables
-from core.logger import setup_logger
 from bot import main_router
-from bot.middlewares.database import DatabaseMiddleware
-from bot.middlewares.error import ErrorMiddleware
+from bot.handlers.admin.admin_common import router as admin_common_router
 from bot.handlers.admin.admin_menu import router as admin_menu_router
 from bot.handlers.admin.admin_orders import router as admin_orders_router
-from bot.handlers.admin.admin_product_edit import router as admin_product_edit_router
-from bot.handlers.admin.admin_products import router as admin_products_router
-from bot.handlers.admin.admin_stats import router as admin_stats_router
-from bot.handlers.admin.admin_payments import router as admin_payments_router
-from bot.handlers.admin.admin_common import router as admin_common_router
 from bot.handlers.admin.admin_payment_settings import (
     router as admin_payment_settings_router,
 )
+from bot.handlers.admin.admin_payments import router as admin_payments_router
+from bot.handlers.admin.admin_product_edit import router as admin_product_edit_router
+from bot.handlers.admin.admin_products import router as admin_products_router
+from bot.handlers.admin.admin_stats import router as admin_stats_router
+from bot.middlewares.database import DatabaseMiddleware
+from bot.middlewares.error import ErrorMiddleware
+from core.config import settings
+from core.database_init import create_tables
+from core.logger import setup_logger
 
 # Настраиваем логирование до всего остального
 setup_logger()

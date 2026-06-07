@@ -1,12 +1,11 @@
 from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.main_menu import main_menu_keyboard
-from services.user import UserService
 from core.config import settings
+from services.user import UserService
 
 router = Router()
 

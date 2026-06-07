@@ -1,5 +1,4 @@
-from aiogram.types import InlineKeyboardButton
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def payment_keyboard(order_id: int):

@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.payment_settings import PaymentSettings
 from core.config import settings as env_settings
+from models.payment_settings import PaymentSettings
 
 
 class PaymentSettingsRepository:

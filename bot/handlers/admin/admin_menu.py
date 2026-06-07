@@ -1,7 +1,5 @@
-from aiogram import Router
-from aiogram.types import CallbackQuery
-from aiogram import F
-from aiogram.types import Message
+from aiogram import F, Router
+from aiogram.types import CallbackQuery, Message
 
 from bot.keyboards.admin_menu import admin_menu_keyboard
 from bot.keyboards.admin_products import admin_products_keyboard

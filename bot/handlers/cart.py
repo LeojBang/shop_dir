@@ -1,11 +1,11 @@
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram import F, Router
+from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.cart import cart_item_keyboard, empty_cart_keyboard
 from repositories.cart import CartRepository
-from repositories.user import UserRepository
 from repositories.order import OrderRepository
+from repositories.user import UserRepository
 
 order_repository = OrderRepository()
 router = Router()
@@ -255,9 +255,9 @@ async def _check_user_profile(user, callback) -> bool:
 
 @router.callback_query(F.data == "checkout")
 async def checkout_handler(callback: CallbackQuery, session: AsyncSession):
+    from bot.keyboards.payment import payment_keyboard
     from core.config import settings
     from repositories.payment_settings import PaymentSettingsRepository
-    from bot.keyboards.payment import payment_keyboard
 
     user = await user_repository.get_by_telegram_id(
         session=session,
@@ -342,8 +342,8 @@ async def checkout_handler(callback: CallbackQuery, session: AsyncSession):
 
 @router.callback_query(F.data == "open_catalog")
 async def open_catalog(callback: CallbackQuery, session: AsyncSession):
-    from repositories.category import CategoryRepository
     from bot.keyboards.catalog import categories_keyboard
+    from repositories.category import CategoryRepository
 
     categories = await CategoryRepository().get_all(session=session)
 
@@ -359,8 +359,8 @@ async def open_catalog(callback: CallbackQuery, session: AsyncSession):
 
 @router.callback_query(F.data.startswith("paid:"))
 async def paid_handler(callback: CallbackQuery, session: AsyncSession):
-    from core.config import settings
     from bot.keyboards.admin_payment import payment_confirm_keyboard
+    from core.config import settings
 
     order_id = int(callback.data.split(":")[1])
 

@@ -1,8 +1,8 @@
 import pytest
+from conftest import make_category, make_product, make_user
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from repositories.cart import CartRepository
-from conftest import make_user, make_category, make_product
 
 repo = CartRepository()
 

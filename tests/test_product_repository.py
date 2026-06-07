@@ -1,9 +1,10 @@
-import pytest
 from decimal import Decimal
+
+import pytest
+from conftest import make_category, make_product
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from repositories.product import ProductRepository
-from conftest import make_category, make_product
 
 repo = ProductRepository()
 

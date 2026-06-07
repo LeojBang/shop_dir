@@ -1,10 +1,10 @@
 import pytest
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 
-from repositories.payment_settings import PaymentSettingsRepository
-from models.payment_settings import PaymentSettings
 import repositories.payment_settings as repo_module
+from models.payment_settings import PaymentSettings
+from repositories.payment_settings import PaymentSettingsRepository
 
 repo = PaymentSettingsRepository()
 

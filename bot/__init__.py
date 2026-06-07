@@ -1,12 +1,12 @@
 from aiogram import Router
 
-from bot.handlers.start import router as start_router
-from bot.handlers.catalog import router as catalog_router
+from bot.handlers.cancel import router as cancel_router
 from bot.handlers.cart import router as cart_router
+from bot.handlers.catalog import router as catalog_router
 from bot.handlers.orders import router as orders_router
 from bot.handlers.profile import router as profile_router
+from bot.handlers.start import router as start_router
 from bot.handlers.support import router as support_router
-from bot.handlers.cancel import router as cancel_router
 
 # добавь первым — до всех остальных
 main_router = Router()

@@ -1,20 +1,18 @@
 from decimal import Decimal
 
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-
-from bot.keyboards.admin_categories import categories_select_keyboard
-from bot.keyboards.admin_products import edit_product_keyboard, confirm_delete_keyboard
-from aiogram import Router
 from aiogram.types import CallbackQuery, Message
-from aiogram import F
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.keyboards.admin_categories import categories_select_keyboard
+from bot.keyboards.admin_products import confirm_delete_keyboard, edit_product_keyboard
 from bot.states.product import (
-    EditPriceState,
-    EditStockState,
-    EditNameState,
     EditDescriptionState,
+    EditNameState,
+    EditPriceState,
     EditProductCategory,
+    EditStockState,
 )
 from repositories.category import CategoryRepository
 from repositories.product import ProductRepository

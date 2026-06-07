@@ -1,14 +1,9 @@
 from decimal import Decimal
 
-from sqlalchemy import ForeignKey
-from sqlalchemy import Numeric
-
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey, Numeric, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
-from sqlalchemy import String
 
 
 class Product(Base):

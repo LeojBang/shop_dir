@@ -1,8 +1,8 @@
 import pytest
+from conftest import make_user
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from repositories.user import UserRepository
-from conftest import make_user
 
 repo = UserRepository()
 

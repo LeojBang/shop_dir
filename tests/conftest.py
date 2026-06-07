@@ -1,22 +1,17 @@
-import pytest  # noqa: F401
-import pytest_asyncio
 from decimal import Decimal
 
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+import pytest  # noqa: F401
+import pytest_asyncio
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from models.base import Base
-from models.user import User
+from models.cart_item import CartItem  # noqa: F401
 from models.category import Category
-from models.product import Product
 from models.order import Order  # noqa: F401
 from models.order_item import OrderItem  # noqa: F401
-from models.cart_item import CartItem  # noqa: F401
 from models.payment_settings import PaymentSettings  # noqa: F401
-
+from models.product import Product
+from models.user import User
 
 # Используем SQLite в памяти — не нужен PostgreSQL для тестов
 DATABASE_URL = "sqlite+aiosqlite:///:memory:"

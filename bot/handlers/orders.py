@@ -1,12 +1,12 @@
-from aiogram import Router, F
-from aiogram.types import (
-    Message,
-    CallbackQuery,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-)
 from datetime import timedelta
 
+from aiogram import F, Router
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.utils.order_status import ORDER_STATUSES

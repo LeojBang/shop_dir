@@ -1,14 +1,14 @@
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram import F, Router
+from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.keyboards.catalog import categories_keyboard
 from bot.keyboards.product_card import product_card_keyboard
 from bot.keyboards.product_list import products_list_keyboard
 from models import Product
-from repositories.category import CategoryRepository
-from bot.keyboards.catalog import categories_keyboard
-from repositories.product import ProductRepository
 from repositories.cart import CartRepository
+from repositories.category import CategoryRepository
+from repositories.product import ProductRepository
 from repositories.user import UserRepository
 
 cart_repository = CartRepository()

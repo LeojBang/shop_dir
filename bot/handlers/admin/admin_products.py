@@ -1,16 +1,13 @@
 from decimal import Decimal
 
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.filters.admin import AdminFilter
 from bot.keyboards.admin_categories import categories_select_keyboard
-from bot.keyboards.admin_products import (
-    products_list_keyboard,
-)
+from bot.keyboards.admin_products import products_list_keyboard
 from bot.keyboards.cancel import cancel_keyboard
 from bot.states.product import AddProductState
 from repositories.category import CategoryRepository

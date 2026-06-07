@@ -1,9 +1,9 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from repositories.order import OrderRepository
 from models import User
+from repositories.order import OrderRepository
 
 router = Router()
 

@@ -1,7 +1,4 @@
-from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def product_card_keyboard(

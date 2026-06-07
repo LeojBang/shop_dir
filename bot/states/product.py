@@ -1,6 +1,4 @@
-from aiogram.fsm.state import State
-from aiogram.fsm.state import StatesGroup
-
+from aiogram.fsm.state import State, StatesGroup
 
 # class AddPhotoState(StatesGroup):
 #     waiting_photo = State()
