@@ -3,10 +3,10 @@ name: CI/CD
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
 
@@ -56,7 +56,7 @@ jobs:
     name: Деплой на сервер
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
 
     steps:
       - name: Деплой через SSH
@@ -70,7 +70,7 @@ jobs:
             set -e
             cd ~/shop_dir
             echo "==> Забираем изменения из git..."
-            git pull origin main
+            git pull origin master
             echo "==> Пересобираем и перезапускаем бота..."
             docker compose up -d --build bot
             echo "==> Применяем миграции..."
