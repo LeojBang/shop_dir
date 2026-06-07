@@ -32,7 +32,7 @@ def build_stats_text(
     total_users: int,
     low_stock_products,
 ) -> str:
-    now = datetime.utcnow()
+    now = datetime.utcnow() + timedelta(hours=3)
     today = now.date()
     week_ago = today - timedelta(days=7)
     month_ago = today - timedelta(days=30)
