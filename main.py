@@ -28,13 +28,16 @@ logger = logging.getLogger(__name__)
 
 
 async def notify_admins_on_start(bot: Bot) -> None:
-    """Уведомляет администраторов о запуске бота."""
+    await asyncio.sleep(2)
     for admin_id in settings.ADMIN_IDS:
         try:
-            await bot.send_message(
-                chat_id=admin_id,
-                text="✅ <b>Бот запущен</b> и готов к работе.",
-                parse_mode="HTML",
+            await asyncio.wait_for(
+                bot.send_message(
+                    chat_id=admin_id,
+                    text="✅ <b>Бот запущен</b> и готов к работе.",
+                    parse_mode="HTML",
+                ),
+                timeout=5.0,  # максимум 5 секунд на одно сообщение
             )
         except Exception as e:
             logger.warning("Не удалось уведомить админа %s: %s", admin_id, e)
