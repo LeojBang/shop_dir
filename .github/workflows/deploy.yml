@@ -49,7 +49,7 @@ jobs:
         run: flake8 .
 
       - name: Pytest — тесты
-        run: python pytest -m tests/ -v
+        run: python -m pytest tests/ -v
 
   # ── Деплой на сервер ─────────────────────────────────────────────────────────
   deploy:
