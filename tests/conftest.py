@@ -79,9 +79,11 @@ async def make_product(
     session: AsyncSession,
     category_id: int,
     name: str = "Тестовый товар",
-    price: Decimal = Decimal("1000.00"),
+    price: Decimal | None = None,
     stock: int = 10,
 ) -> Product:
+    if price is None:
+        price = Decimal("1000.00")
     product = Product(
         name=name,
         price=price,
