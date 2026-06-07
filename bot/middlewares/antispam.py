@@ -25,9 +25,7 @@ class AntispamMiddleware(BaseMiddleware):
         self._user_requests[user_id].append(now)
         return False
 
-    async def __call__(
-        self, handler, event: TelegramObject, data: dict
-    ):
+    async def __call__(self, handler, event: TelegramObject, data: dict):
         user_id = None
 
         update = data.get("event_update")
