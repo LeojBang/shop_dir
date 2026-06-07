@@ -2,7 +2,7 @@ import logging
 import traceback
 
 from aiogram import BaseMiddleware
-from aiogram.types import Update
+from aiogram.types import TelegramObject
 
 from core.config import settings
 
@@ -17,13 +17,13 @@ class ErrorMiddleware(BaseMiddleware):
     - Показывает пользователю понятное сообщение
     """
 
-    async def __call__(self, handler, event: Update, data: dict):
+    async def __call__(self, handler, event: TelegramObject, data: dict):
         try:
             return await handler(event, data)
         except Exception as e:
             await self._handle_error(e, event, data)
 
-    async def _handle_error(self, error: Exception, event: Update, data: dict):
+    async def _handle_error(self, error: Exception, event: TelegramObject, data: dict):
         tb = traceback.format_exc()
 
         # Логируем с полным traceback
@@ -42,33 +42,30 @@ class ErrorMiddleware(BaseMiddleware):
         username = None
         context = "неизвестно"
 
-        if event.message:
-            user_id = event.message.from_user.id if event.message.from_user else None
-            username = (
-                event.message.from_user.username if event.message.from_user else None
-            )
-            context = f"message: {event.message.text or '(нет текста)'}"
+        from aiogram.types import Update
 
-            # Сообщаем пользователю
-            try:
-                await event.message.answer(
-                    "⚠️ Произошла ошибка. Попробуйте ещё раз или обратитесь в поддержку."
-                )
-            except Exception:
-                pass
-
-        elif event.callback_query:
-            user_id = event.callback_query.from_user.id
-            username = event.callback_query.from_user.username
-            context = f"callback: {event.callback_query.data}"
-
-            try:
-                await event.callback_query.answer(
-                    "⚠️ Произошла ошибка. Попробуйте ещё раз.",
-                    show_alert=True,
-                )
-            except Exception:
-                pass
+        update = data.get("event_update")
+        if isinstance(update, Update):
+            if update.message and update.message.from_user:
+                user_id = update.message.from_user.id
+                username = update.message.from_user.username
+                context = f"message: {update.message.text or '(нет текста)'}"
+                try:
+                    await update.message.answer(
+                        "⚠️ Произошла ошибка. Попробуйте ещё раз."
+                    )
+                except Exception:
+                    pass
+            elif update.callback_query and update.callback_query.from_user:
+                user_id = update.callback_query.from_user.id
+                username = update.callback_query.from_user.username
+                context = f"callback: {update.callback_query.data}"
+                try:
+                    await update.callback_query.answer(
+                        "⚠️ Произошла ошибка.", show_alert=True
+                    )
+                except Exception:
+                    pass
 
         # Отправляем детали ошибки всем админам
         error_text = (

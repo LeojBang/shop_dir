@@ -15,6 +15,7 @@ from bot.handlers.admin.admin_payments import router as admin_payments_router
 from bot.handlers.admin.admin_product_edit import router as admin_product_edit_router
 from bot.handlers.admin.admin_products import router as admin_products_router
 from bot.handlers.admin.admin_stats import router as admin_stats_router
+from bot.middlewares.antispam import AntispamMiddleware
 from bot.middlewares.database import DatabaseMiddleware
 from bot.middlewares.error import ErrorMiddleware
 from core.config import settings
@@ -60,6 +61,9 @@ async def main():
 
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
+
+    # Антиспам
+    dp.update.outer_middleware(AntispamMiddleware(limit=5, window=3.0))
 
     # Глобальный обработчик ошибок — первым
     dp.update.outer_middleware(ErrorMiddleware())
