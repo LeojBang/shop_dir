@@ -58,4 +58,4 @@ def setup_logger() -> logging.Logger:
     return root
 
 
-logger = setup_logger()
+logger = logging.getLogger(__name__)
