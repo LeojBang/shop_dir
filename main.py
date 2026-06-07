@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from bot import main_router
@@ -25,6 +26,8 @@ from core.logger import setup_logger
 # Настраиваем логирование до всего остального
 setup_logger()
 logger = logging.getLogger(__name__)
+
+session = AiohttpSession(timeout=30)
 
 
 async def notify_admins_on_start(bot: Bot) -> None:
@@ -59,7 +62,7 @@ async def notify_admins_on_stop(bot: Bot) -> None:
 async def main():
     logger.info("Запуск бота...")
 
-    bot = Bot(token=settings.BOT_TOKEN)
+    bot = Bot(token=settings.BOT_TOKEN, session=session)
     await create_tables()
 
     storage = MemoryStorage()
@@ -92,7 +95,11 @@ async def main():
     logger.info("Бот запущен успешно")
 
     try:
-        await dp.start_polling(bot)
+        await dp.start_polling(
+            bot,
+            allowed_updates=dp.resolve_used_update_types(),
+            handle_signals=True,
+        )
     finally:
         # Уведомляем о штатной остановке
         await notify_admins_on_stop(bot)
