@@ -12,15 +12,7 @@ class UserService:
         telegram_id: int,
         username: str | None,
     ):
-        user = await self.repository.get_by_telegram_id(
-            session=session,
-            telegram_id=telegram_id,
-        )
-
-        if user:
-            return user
-
-        return await self.repository.create(
+        return await self.repository.get_or_create(
             session=session,
             telegram_id=telegram_id,
             username=username,

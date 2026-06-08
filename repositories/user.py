@@ -1,4 +1,5 @@
 from sqlalchemy import select, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.user import User
@@ -16,6 +17,25 @@ class UserRepository:
         result = await session.execute(stmt)
 
         return result.scalar_one_or_none()
+
+    async def get_or_create(
+        self,
+        session: AsyncSession,
+        telegram_id: int,
+        username: str | None,
+    ) -> User:
+        stmt = (
+            insert(User)
+            .values(telegram_id=telegram_id, username=username)
+            .on_conflict_do_nothing(index_elements=["telegram_id"])
+            .returning(User)
+        )
+        result = await session.execute(stmt)
+        await session.commit()
+        row = result.scalar_one_or_none()
+        if row is None:
+            row = await self.get_by_telegram_id(session, telegram_id)
+        return row
 
     async def create(
         self,

@@ -22,6 +22,50 @@ async def test_create_user(session: AsyncSession):
 
 
 @pytest.mark.asyncio
+async def test_get_or_create_creates_new_user(session: AsyncSession):
+    """get_or_create создаёт пользователя, если его нет."""
+    user = await repo.get_or_create(
+        session=session,
+        telegram_id=555,
+        username="newbie",
+    )
+
+    assert user.id is not None
+    assert user.telegram_id == 555
+    assert user.username == "newbie"
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_returns_existing_user(session: AsyncSession):
+    """get_or_create возвращает существующего пользователя, не создаёт дубль."""
+    existing = await make_user(session, telegram_id=666, username="already_here")
+
+    user = await repo.get_or_create(
+        session=session,
+        telegram_id=666,
+        username="already_here",
+    )
+
+    assert user.id == existing.id
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_no_duplicate_on_conflict(session: AsyncSession):
+    """При конфликте не создаётся второй пользователь с тем же telegram_id."""
+    await repo.get_or_create(session=session, telegram_id=777, username="once")
+    await repo.get_or_create(session=session, telegram_id=777, username="once")
+
+    # Убеждаемся что в БД ровно одна запись
+    from sqlalchemy import func, select
+
+    from models.user import User
+
+    result = await session.execute(select(func.count()).where(User.telegram_id == 777))
+    count = result.scalar()
+    assert count == 1
+
+
+@pytest.mark.asyncio
 async def test_get_by_telegram_id_found(session: AsyncSession):
     """Пользователь найден по telegram_id."""
     await make_user(session, telegram_id=222)

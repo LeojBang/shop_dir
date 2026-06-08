@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +20,23 @@ async def test_register_new_user(session: AsyncSession):
     assert user.id is not None
     assert user.telegram_id == 201
     assert user.username == "newuser"
+
+
+@pytest.mark.asyncio
+async def test_register_user_concurrent_no_duplicate(session_factory):
+    """Два одновременных /start не создают дубль пользователя."""
+    async with session_factory() as s1, session_factory() as s2:
+        results = await asyncio.gather(
+            service.register_user(session=s1, telegram_id=204, username="race"),
+            service.register_user(session=s2, telegram_id=204, username="race"),
+            return_exceptions=True,
+        )
+
+    for r in results:
+        assert not isinstance(r, Exception)
+
+    ids = {r.id for r in results if not isinstance(r, Exception)}
+    assert len(ids) == 1
 
 
 @pytest.mark.asyncio

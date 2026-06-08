@@ -145,7 +145,7 @@ python -m pytest tests/ -v
 python -m pytest tests/ -v --cov=repositories --cov=services --cov-report=term-missing
 ```
 
-**Покрыто тестами:** `UserRepository`, `ProductRepository`, `CartRepository`, `OrderRepository`, `UserService`, `PaymentSettingsRepository` — 48 тестов.
+**Покрыто тестами:** `UserRepository`, `ProductRepository`, `CartRepository`, `OrderRepository`, `UserService`, `PaymentSettingsRepository` — 52 тестов.
 
 ---
 

@@ -19,20 +19,40 @@ DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 @pytest_asyncio.fixture(scope="function")
 async def session():
-    """Создаёт чистую БД и сессию для каждого теста."""
     engine = create_async_engine(DATABASE_URL, echo=False)
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    session_factory = async_sessionmaker(
+    factory = async_sessionmaker(
         bind=engine,
         class_=AsyncSession,
         expire_on_commit=False,
     )
 
-    async with session_factory() as s:
+    async with factory() as s:
         yield s
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+
+    await engine.dispose()
+
+
+@pytest_asyncio.fixture(scope="function")
+async def session_factory():
+    engine = create_async_engine(DATABASE_URL, echo=False)
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    factory = async_sessionmaker(
+        bind=engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    yield factory
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
