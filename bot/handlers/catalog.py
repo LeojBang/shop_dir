@@ -1,4 +1,5 @@
 from aiogram import F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -93,7 +94,6 @@ async def product_view(
     session: AsyncSession,
 ):
     product_id = int(callback.data.split(":")[1])
-
     product = await session.get(Product, product_id)
 
     text = (
@@ -103,7 +103,10 @@ async def product_view(
         f"📦 Остаток: {product.stock}\n\n"
     )
 
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except TelegramBadRequest:
+        pass
 
     await callback.message.answer(
         text,
@@ -112,7 +115,6 @@ async def product_view(
             product.category_id,
         ),
     )
-
     await callback.answer()
 
 
